@@ -7,9 +7,33 @@ import numpy as np
 #The boundary update should have a scaled boundary box dependent on the object velocity
 
 Scaling = 1;
-rows=400
-cols=400
+rows=20
+cols=20
 object_amount = 10
+
+#Test samples:
+Matrix_test1 = np.matrix([
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0],
+    [0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0],
+    [0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0],
+    [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
+    [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+])
 
 
 object_matrix = np.zeros([object_amount, 5])
@@ -39,9 +63,9 @@ def find_boundary(Matrix_edges, Scaling):
                 edges_row+=1
         
         #check if this returns an integer!
-        for k in range(edges_row/2):
+        for k in range(int(edges_row/2)):
             #zero in this case means there is no upper_height assigned or simply not there
-            if object_matrix[k,1]!=0:
+            if object_matrix[k,1]==0:
                 object_matrix[k, 1]=i
 
 
@@ -56,12 +80,15 @@ def find_boundary(Matrix_edges, Scaling):
                 edges_row+=1
         
         #check if this returns an integer!
-        for k in range(edges_row/2):
-            #zero in this case means there is no upper_height assigned or simply not there
-            if object_matrix[k,2]!=0:
+        for k in range(int(edges_row/2)):
+            #zero in this case means there is no lower_height assigned or simply not there
+            if object_matrix[k,2]==0:
                 object_matrix[k, 2]=i
 
 
+find_boundary(Matrix_test1, Scaling)
+
+print(object_matrix[1, 1])
 
 
                
