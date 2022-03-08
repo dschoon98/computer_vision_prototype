@@ -52,7 +52,7 @@ boundary_matrix = np.zeros([rows,cols])
 
 
 #This function will find the extremes of the different objects that are in the scene and will display them in the object_matrix
-def find_extremes(Matrix_edges, Scaling):
+def find_upper_extreme(Matrix_edges, Scaling):
     global boundary_matrix;
     global object_matrix;
 
@@ -66,6 +66,7 @@ def find_extremes(Matrix_edges, Scaling):
     #This loop checks for every object what it's upper_height is
     #And also is responisble for the the identification of the objects, the highest object will be object 1 and the one below that 2 etc. etc.
     #Should break if the object_amount limit is reached
+    #Should also do something in the case two objects are vertically stacked
     for i in range(rows):
         edges_row=0
         #Checks for every row if there are edges present, the edges will always come in pairs
@@ -79,31 +80,64 @@ def find_extremes(Matrix_edges, Scaling):
             if object_matrix[k,1]==0:
                 object_matrix[k, 1]=i
 
+#This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
+def right_edge_finder(Matrix_edges, i, j, edge_gap = 3):
+
+    no_land_count=0
+    while(no_land_count <= edge_gap):
+        if j==cols-1:
+            break
+        if Matrix_edges[i, j+1] == 1:
+            j+=1
+        elif Matrix_edges[i+1, j+1] == 1:
+            i+=1
+            j+=1
+        elif Matrix_edges[i+1, j] == 1:
+            i+=1
+        else:
+            #break the while if the edge of matrix is found.
+            if j+1==cols-1:
+                break
+            no_land_count+=1
+            j+=1
+            if no_land_count>edge_gap:
+                j-=4
+
+    return j
+
+#This function finds the left most edge of the object from the most upper coordinate of the object edge.
+def left_edge_finder(Matrix_edges, i, j, edge_gap = 3):
+
+    no_land_count=0
+    while(no_land_count <= edge_gap):
+        if j==0:
+            break
+        if Matrix_edges[i, j-1] == 1:
+            j-=1
+        elif Matrix_edges[i-1, j-1] == 1:
+            i-=1
+            j-=1
+        elif Matrix_edges[i-1, j] == 1:
+            i-=1
+        else:
+            #break the while if the edge of matrix is found.
+            if j-1==0:
+                break
+            no_land_count+=1
+            j-=1
+            if no_land_count>edge_gap:
+                j+=4
 
 
-    #This loop checks for every object what it's lower_height is
-    #and does this by using a reversed loop
-    #The working principle is exactly the same and that is way it incorrectly identifies the correct object order (This algoritm says the lowest object is object 1)
-    #This identification issue should be fixed in the future
-    a_range = range(rows)
-    for i in reversed(a_range):
-        edges_row=0
-        for j in range(cols):
-            if Matrix_edges[i,j]==1:
-                edges_row+=1
-        
-        #check if this returns an integer!
-        for k in range(int(edges_row/2)):
-            #zero in this case means there is no lower_height assigned or simply not there
-            if object_matrix[k,2]==0:
-                object_matrix[k, 2]=i
+    return j
+
+#-----------------------Below here testing the code with the test matrices----------------------------------
 
 
-find_extremes(Matrix_test1, Scaling)
-#It correctly find the different upper and lower extremes of the two objects only the identifaction is wrong thus the information is stored in the wrong place.
-#This will be fixed in the near future.
-print(object_matrix[0, 2])
-
+find_upper_extreme(Matrix_test1, Scaling)
+print(object_matrix[0, 1])
+print(right_edge_finder(Matrix_test1, 2, 13))
+print(left_edge_finder(Matrix_test1, 2, 13))
 
                
 
