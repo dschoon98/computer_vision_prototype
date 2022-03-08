@@ -19,18 +19,18 @@ def edge_definer(bin_mat):
                     temp_val = 0
     return matrix_edge
 
-for i in range(3):
-    bin_mat1 = YUV.filter_color('images/flag_and_multi_color.jpeg',180,253,100,150,130,140,resize_factor)
-    bin_mat2 = YUV.filter_color('images/flag_and_multi_color.jpeg',70,120,150,160,100,120,resize_factor)
-    bin_mat3 = YUV.filter_color('images/flag_and_multi_color.jpeg',100,200,70,90,160,240,resize_factor)
-    
-    bin_mat_tot = bin_mat1+bin_mat2+bin_mat3            
-    
-    matrix_edge = edge_definer(bin_mat_tot)
-    
-    plt.figure()
-    plt.imshow(matrix_edge)
-    plt.title('Edges only')
+
+bin_mat1 = YUV.filter_color('images/flag_and_multi_color.jpeg',180,253,100,150,130,140,resize_factor)
+bin_mat2 = YUV.filter_color('images/flag_and_multi_color.jpeg',70,120,150,160,100,120,resize_factor)
+bin_mat3 = YUV.filter_color('images/flag_and_multi_color.jpeg',100,200,70,90,160,240,resize_factor)
+
+bin_mat_tot = bin_mat1+bin_mat2+bin_mat3            
+
+matrix_edge = edge_definer(bin_mat_tot)
+
+plt.figure()
+plt.imshow(matrix_edge)
+plt.title('Edges only')
 
                 
 
