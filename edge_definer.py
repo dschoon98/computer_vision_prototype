@@ -17,6 +17,15 @@ def edge_definer(bin_mat):
                     temp_val = 1
                 else:
                     temp_val = 0
+    for j in range(cols):
+        temp_val = 0
+        for i in range(rows):
+            if temp_val != bin_mat[i,j]:
+                matrix_edge[i,j] = 1
+                if temp_val == 0:
+                    temp_val = 1
+                else:
+                    temp_val = 0
     return matrix_edge
 
 
