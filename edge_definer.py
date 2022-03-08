@@ -1,17 +1,22 @@
 import numpy as np
+import images
+import YUV_slices as YUV
+import cv2
+
+YUV.filter_color('images/image1.jpeg',50,300,0,120,160,220,resize_factor=5)
 
 cols = 400
 rows = 400
-matrix_yuv = np.zeros([rows,cols],dtype=object)
-for i in range(rows):
-    for j in range(cols):
-        temp_array=np.zeros(3)
-        for k in range(3):
-            temp_array[k] = np.random.rand()
-            
-        matrix_yuv[i,j] = temp_array
-
-print(matrix_yuv)        
+#matrix_yuv = np.zeros([rows,cols],dtype=object)
+#for i in range(rows):
+#    for j in range(cols):
+#        temp_array=np.zeros(3)
+#        for k in range(3):
+#            temp_array[k] = np.random.rand()
+#            
+#        matrix_yuv[i,j] = temp_array
+#
+#print(matrix_yuv)        
 
 
 #matrix_yuv = np.array([[np.array([3,2,3]),np.array([1,2,3])],[np.array([1,2,3]),np.array([1,2,3])]])
@@ -49,6 +54,7 @@ update_simple_u(matrix_yuv,threshold_u)
 update_simple_v(matrix_yuv,threshold_v)
 
 
+
 def edge_definer(simple_matrix):
     matrix_edge = np.zeros([rows,cols])
     for i in range(rows):
@@ -63,6 +69,7 @@ def edge_definer(simple_matrix):
     return matrix_edge
                 
 matrix_edge = edge_definer(simple_matrix_y)
+
                 
 #    #if 0 is links and 1 is rechts, edge :
 #    for i in range(400):
