@@ -130,7 +130,116 @@ rows = rows - i_lower
 #    return object_matrix
 #
 
+#This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
+def right_maxima_finder(Matrix_edges, i, j, k, edge_gap = 0):
 
+    global object_matrix;
+    no_land_count=0
+    while(no_land_count <= edge_gap):
+        if j==cols-1:
+            break
+        if Matrix_edges[int(i), int(j+1)] == 1:
+            j+=1
+        elif Matrix_edges[int(i+1), int(j+1)] == 1:
+            i+=1
+            j+=1
+        elif Matrix_edges[int(i+1), int(j)] == 1:
+            i+=1
+        else:
+            #break the while if the edge of matrix is found.
+            if j+1==cols-1:
+                break
+            no_land_count+=1
+            j+=1
+            if no_land_count>edge_gap:
+                j-=edge_gap
+    object_matrix[k,2]=i
+    object_matrix[k,3]=j
+
+    return j
+
+    
+
+#This function finds the left most edge of the object from the most upper coordinate of the object edge.
+def left_maxima_finder(Matrix_edges, i, j, k, edge_gap = 0):
+
+    global object_matrix;
+    no_land_count=0
+    while(no_land_count <= edge_gap):
+        if j==0:
+            break
+        if Matrix_edges[int(i), int(j-1)] == 1:
+            j-=1
+        elif Matrix_edges[int(i-1), int(j-1)] == 1:
+            i-=1
+            j-=1
+        elif Matrix_edges[int(i-1), int(j)] == 1:
+            i-=1
+        else:
+            #break the while if the edge of matrix is found.
+            if j-1==0:
+                break
+            no_land_count+=1
+            j-=1
+            if no_land_count>edge_gap:
+                j+=edge_gap
+    object_matrix[k,4]=i
+    object_matrix[k,5]=j
+
+    return j
+
+def lower_maxima_finder(Matrix_edges, i_right, j_right, k_object, edge_gap = 0):
+    global object_matrix;
+    no_land_count=0
+    while(no_land_count <= edge_gap):
+        if i_right==rows-1:
+            break
+        if Matrix_edges[int(i_right+1), int(j_right)] == 1:
+            i_right+=1
+        elif Matrix_edges[int(i_right+1), int(j_right-1)] == 1:
+            i_right+=1
+            j_right-=1
+        elif Matrix_edges[int(i_right),int(j_right-1)] == 1:
+            j_right-=1
+        else:
+            #This effectively breaks the while loop, which is intended as there is no use for the edge_gap code anymore
+            no_land_count+=1
+    object_matrix[k_object, 6]=i_right
+    object_matrix[k_object, 7]=j_right
+
+    return i_right
+        
+
+
+#-----------------------Below here testing the code with the test matrices----------------------------------
+
+
+plt.figure()
+plt.imshow(Matrix_test1)
+plt.figure()
+plt.imshow(Matrix_test2)
+
+find_upper_extreme(Matrix_test1, Scaling)
+print("Object matrix first object upper_height x coordinate: ", object_matrix[0, 1])
+print("Object matrix second object upper_height y coordinate: ", object_matrix[0,0])
+print(find_upper_extreme(Matrix_test1, Scaling))
+#plt.show()
+
+
+#edges = [left_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1])) , right_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1]))]
+
+print(Matrix_test2.shape)
+
+
+print("Below here are tests of the maxima finder functions: ")
+find_upper_extreme(Matrix_test1, Scaling)
+right_maxima_finder(Matrix_test1, object_matrix[0, 0], object_matrix[0,1], 0)
+left_maxima_finder(Matrix_test1, object_matrix[0, 0], object_matrix[0,1], 0)
+lower_maxima_finder(Matrix_test1, object_matrix[0, 2], object_matrix[0,3], 0)
+print("The lowest value of the first object is: ", object_matrix[0,6])
+print("The right value of the first object is: ", object_matrix[0,3])
+print("The left value of the first object is: ", object_matrix[0,5])
+print("The highest value of the first object is: ", object_matrix[0,0])
 
 
 
