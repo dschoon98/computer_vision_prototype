@@ -5,10 +5,6 @@ import matplotlib.pyplot as plt
 #The scaling factor determines how large the boundary boxes will be around the object.
 Scaling = 1;
 
-#Rn this is filled in by hand, but it would be much nicer if the algoritm detects what the dimensions of the input matrices are.
-rows=20
-cols=20
-
 #This is the amount of objects that the programm can differentiatie, if the object count is larger the matrix will also be larger.
 #Its important to have a fixed amount and not dynamically allocated because we don't want to flood RAM 
 object_amount = 10
@@ -64,44 +60,35 @@ Matrix_test2 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 ])
 #Change the description of this matrix!!!!!!!!  
-object_matrix = np.zeros([object_amount, 5])
-
-
-
+object_matrix = np.zeros([object_amount, 8])
 bin_mat = Matrix_test1
+
+switch_var = 1
 rows = len(bin_mat[:,1])
-cols = len(bin_mat[1,:])
-k = 0
-i_lower = 0
+cols = bin_mat.shape[1]
+print(cols)
 
 
 #This function will loop the image until it finds an object
-def loop_until_hit(rows,cols,k,i_lower):
+def loop_until_hit(bin_mat,rows,cols,k,i_lower):
     global object_matrix
-    global bin_mat
-    if k>0:
-#        i_lower = object_matrix[k-1, 6]  # 6th index for i_lower
-        sliced_mat = bin_mat[i_lower:,:]
-    else:
-        sliced_mat = bin_mat
-    
-    for i in range(rows):    
+    global switch_var 
+    for i in range(i_lower,rows):    
         for j in range(cols):
-            if sliced_mat[i,j] == 1:
+            if bin_mat[i,j] == 1:
                 break
-        break
+        if bin_mat[i,j] == 1:
+            break
+        if i==rows:
+            switch_var = 0
+            
+            
+
+    object_matrix[k,0] = i
+    object_matrix[k,1] = j
     return i,j
 
 
-while rows > 0:
-    
-    [i,j] = loop_until_hit(rows, cols, k,i_lower)
-    
-    [i_lower, j_lower, i_left, j_left, i_right, j_right] = maxima_finder(i,j,k)
-    
-    rows = rows - i_lower
-    
-    k += 1
 
 
 #
@@ -110,7 +97,8 @@ while rows > 0:
 #    global boundary_matrix;
 #    global object_matrix;
 #
-#    #This loop checks for every object what it's upper_height is
+#    #This loop checks for every object wh    cols = len(bin_mat[1,:])
+#at it's upper_height is
 #    #And also is responisble for the the identification of the objects, the highest object will be object 1 and the one below that 2 etc. etc.
 #    #Should break if the object_amount limit is reached
 #    #Should also do something in the case two objects are vertically stacked
@@ -208,42 +196,62 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right, k_object, edge_gap = 0):
             no_land_count+=1
     object_matrix[k_object, 6]=i_right
     object_matrix[k_object, 7]=j_right
+    
+    i_lower = i_right
+    return i_lower
 
-    return i_right
+
+
+bin_mat = Matrix_test1
+
+k = 0
+i_lower = 0
+
+while switch_var:
+    
+    [i,j] = loop_until_hit(bin_mat,rows,cols,k,i_lower)
+    
+    lower_maxima_finder(bin_mat,i,j,k)
+    
+    rows_left = int(rows - object_matrix[k,6])
+    
+    k += 1
+    
+
         
 
 
 #-----------------------Below here testing the code with the test matrices----------------------------------
 
 
-plt.figure()
-plt.imshow(Matrix_test1)
-plt.figure()
-plt.imshow(Matrix_test2)
-
-find_upper_extreme(Matrix_test1, Scaling)
-print("Object matrix first object upper_height x coordinate: ", object_matrix[0, 1])
-print("Object matrix second object upper_height y coordinate: ", object_matrix[0,0])
-print(find_upper_extreme(Matrix_test1, Scaling))
-#plt.show()
-
-
-#edges = [left_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1])) , right_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1]))]
-
-print(Matrix_test2.shape)
-
-
-print("Below here are tests of the maxima finder functions: ")
-find_upper_extreme(Matrix_test1, Scaling)
-right_maxima_finder(Matrix_test1, object_matrix[0, 0], object_matrix[0,1], 0)
-left_maxima_finder(Matrix_test1, object_matrix[0, 0], object_matrix[0,1], 0)
-lower_maxima_finder(Matrix_test1, object_matrix[0, 2], object_matrix[0,3], 0)
-print("The lowest value of the first object is: ", object_matrix[0,6])
-print("The right value of the first object is: ", object_matrix[0,3])
-print("The left value of the first object is: ", object_matrix[0,5])
-print("The highest value of the first object is: ", object_matrix[0,0])
-
-
+#plt.figure()
+#plt.imshow(Matrix_test1)
+#plt.figure()
+#plt.imshow(Matrix_test2)
+#
+#find_upper_extreme(Matrix_test1, Scaling)
+#print("Object matrix first object upper_height x coordinate: ", object_matrix[0, 1])
+#print("Object matrix second object upper_height y coordinate: ", object_matrix[0,0])
+#print(find_upper_extreme(Matrix_test1, Scaling))
+##plt.show()
+#
+#
+##edges = [left_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1])) , right_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1]))]
+#
+#print(Matrix_test2.shape)
+#
+#
+#print("Below here are tests of the maxima finder functions: ")
+#find_upper_extreme(Matrix_test1, Scaling)
+#right_maxima_finder(Matrix_test1, object_matrix[0, 0], object_matrix[0,1], 0)
+#left_maxima_finder(Matrix_test1, object_matrix[0, 0], object_matrix[0,1], 0)
+#lower_maxima_finder(Matrix_test1, object_matrix[0, 2], object_matrix[0,3], 0)
+#print("The lowest value of the first object is: ", object_matrix[0,6])
+#print("The right value of the first object is: ", object_matrix[0,3])
+#print("The left value of the first object is: ", object_matrix[0,5])
+#print("The highest value of the first object is: ", object_matrix[0,0])
+#
+#
 
 
                 
