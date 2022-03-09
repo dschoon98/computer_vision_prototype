@@ -73,7 +73,7 @@ print(cols)
 def loop_until_hit(bin_mat,rows,cols,k,i_lower):
     global object_matrix
     global switch_var 
-    for i in range(i_lower,rows):    
+    for i in range(i_lower+1,rows):    
         for j in range(cols):
             if bin_mat[i,j] == 1:
                 break
