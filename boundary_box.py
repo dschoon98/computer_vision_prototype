@@ -16,8 +16,8 @@ object_amount = 10
 Matrix_test1 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
@@ -66,31 +66,57 @@ bin_mat = Matrix_test1
 switch_var = 1
 rows = len(bin_mat[:,1])
 cols = bin_mat.shape[1]
-print(cols)
 
 
 #This function will loop the image until it finds an object
-def loop_until_hit(bin_mat,rows,cols,k,i_lower):
+def loop_until_hit(bin_mat,rows,cols,k,i_lower,j_left,j_right):
     global object_matrix
     global switch_var 
-<<<<<<< HEAD
-    for i in range(i_lower+1,rows):    
-=======
-    for i in range(int(i_lower+1),int(rows)):    
->>>>>>> 1024f618a9a225a3adc6ccd98bc1594f2fdf886d
-        for j in range(cols):
+    print(i_lower)
+    i_start = 0
+    j_start = 0
+    if k>0:
+        # When the bottom of the previous object is in the shadow of the next object       
+        if np.sum(bin_mat[int(i_lower),:int(j_left)])>0:
+            i_start = object_matrix[k-1,0]
+            j_end = object_matrix[k-1,5]     # = j_left[-1]
+            for i in range(int(i_start),int(rows)):            
+                for j in range(0,int(j_end)):
+                    if bin_mat[i,j] == 1:
+                        break
+                if bin_mat[i,j] == 1:
+                    break
+                if i==rows:
+                    switch_var = 0
+        
+        # When the bottom of the previous object is casting a shadow over the next object 
+        if np.sum(bin_mat[int(i_lower),int(j_right):])>0:
+            i_start = object_matrix[k-1,0]
+            j_start = object_matrix[k-1,7]
+            for i in range(int(i_start),int(rows)):            
+                for j in range(int(j_start),int(cols)):
+                    if bin_mat[i,j] == 1:
+                        break
+                if bin_mat[i,j] == 1:
+                    break
+                if i==rows:
+                    switch_var = 0
+                    
+    else:
+        for i in range(int(i_start),int(rows)):            
+            for j in range(int(j_start),int(cols)):
+                if bin_mat[i,j] == 1:
+                    break
             if bin_mat[i,j] == 1:
                 break
-        if bin_mat[i,j] == 1:
-            break
-        if i==rows:
-            switch_var = 0
-            
-            
+            if i==rows:
+                switch_var = 0        
+    print('i start= ',i_start)
+    print('j start= ',j_start)
 
     object_matrix[k,0] = i
     object_matrix[k,1] = j
-    return i,j
+
 
 
 
@@ -200,25 +226,27 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right, k_object, edge_gap = 0):
             no_land_count+=1
     object_matrix[k_object, 6]=i_right
     object_matrix[k_object, 7]=j_right
-    
-    i_lower = i_right
-    return i_lower
-
 
 
 bin_mat = Matrix_test1
 
 k = 0
-i_lower = 0
+
 
 while switch_var:
-    [i,j] = loop_until_hit(bin_mat,rows,cols,k,object_matrix[k,6])
-    right_maxima_finder(bin_mat,i,j,k)
-    left_maxima_finder(bin_mat,i,j,k)
+    if k>0:
+        loop_until_hit(bin_mat,rows,cols,k,object_matrix[k-1,6],object_matrix[k-1,5],object_matrix[k-1,3])
+    else: 
+        loop_until_hit(bin_mat,rows,cols,k,0,0,0)
+        
+        
+    right_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1],k)
+    left_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1],k)
     lower_maxima_finder(bin_mat,object_matrix[k,2],object_matrix[k,3],k)
     
-    rows_left = int(rows - object_matrix[k,6])
     
+    
+    rows_left = int(rows - object_matrix[k,6])
     k += 1
     
 
@@ -227,7 +255,7 @@ while switch_var:
 
 #-----------------------Below here testing the code with the test matrices----------------------------------
 
-
+#
 #plt.figure()
 #plt.imshow(Matrix_test1)
 #plt.figure()
@@ -255,7 +283,7 @@ while switch_var:
 #print("The left value of the first object is: ", object_matrix[0,5])
 #print("The highest value of the first object is: ", object_matrix[0,0])
 #
-#
+
 
 
                 
