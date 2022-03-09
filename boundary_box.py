@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import cv2
-import imutils
+
+
 #The scaling factor determines how large the boundary boxes will be around the object.
 Scaling = 1;
 
@@ -92,16 +92,18 @@ def loop_until_hit(rows,cols,k,i_lower):
             if sliced_mat[i,j] == 1:
                 break
         break
+    return i,j
+
+
+while rows > 0:
+    
+    [i,j] = loop_until_hit(rows, cols, k,i_lower)
+    
+    [i_lower, j_lower, i_left, j_left, i_right, j_right] = maxima_finder(i,j,k)
+    
+    rows = rows - i_lower
+    
     k += 1
-    return i,j,k
-
-
-
-loop_until_hit(rows, cols, k)
-
-[i_lower, j_lower, i_left, j_left, i_right, j_right] = maxima_finder(i,j,k)
-
-rows = rows - i_lower
 
 
 #
