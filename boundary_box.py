@@ -5,7 +5,9 @@ import imutils
 #The scaling factor determines how large the boundary boxes will be around the object.
 Scaling = 1;
 
-
+#Rn this is filled in by hand, but it would be much nicer if the algoritm detects what the dimensions of the input matrices are.
+rows=20
+cols=20
 
 #This is the amount of objects that the programm can differentiatie, if the object count is larger the matrix will also be larger.
 #Its important to have a fixed amount and not dynamically allocated because we don't want to flood RAM 
@@ -65,10 +67,6 @@ Matrix_test2 = np.matrix([
 object_matrix = np.zeros([object_amount, 5])
 
 
-#
-##This will be the matrix the will contain the different boundaries of all the different objects.
-##The boundary size away from the limits of the object will be determined by the size of the object (its volume) and the scaling factor.
-#boundary_matrix = np.zeros([rows,cols])
 
 bin_mat = Matrix_test1
 rows = len(bin_mat[:,1])
@@ -133,6 +131,11 @@ rows = rows - i_lower
 #
 
 
+
+
+
+
+                
 
 
         
