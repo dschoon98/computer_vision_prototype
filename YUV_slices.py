@@ -88,15 +88,15 @@ def filter_color(image_name = 'DelFly_tulip.jpg', y_low = 50, y_high = 200, \
                YUV[y,x,1] >= u_low and YUV[y,x,1] <= u_high and \
                YUV[y,x,2] >= v_low and YUV[y,x,2] <= v_high):
                 Filtered[y,x] = 1;
+    #plt.figure();
+    #RGB = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
+    #plt.imshow(RGB);
+    #plt.title('Original image');
     
-    plt.figure();
-    RGB = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
-    plt.imshow(RGB);
-    plt.title('Original image');
-    
-    plt.figure()
-    plt.imshow(Filtered);
-    plt.title('Filtered image');
+    #plt.figure()
+    #plt.imshow(Filtered);
+    #plt.title('Filtered image');
+    return Filtered
 
     
 

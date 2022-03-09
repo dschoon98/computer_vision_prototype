@@ -78,7 +78,7 @@ boundary_matrix = np.zeros([rows,cols])
 
 
 #SHOULD BE IMPROVED FOR FINDING OBJECTS STACKED ABOVE EACH OTHER AND WITH SAME UPPER HEIGHT (should pass test2 and a test 3 that still has to be made):
-def find_upper_extreme(Matrix_test1, Scaling):
+def find_upper_extreme(Matrix_test, Scaling):
     global boundary_matrix;
     global object_matrix;
 
@@ -90,7 +90,7 @@ def find_upper_extreme(Matrix_test1, Scaling):
         edges_row=0
         #Checks for every row if there are edges present, the edges will always come in pairs
         for j in range(cols):
-            if Matrix_test1[i,j]==1:
+            if Matrix_test[i,j]==1:
                 edges_row+=1
         #This range below checks how many objects are found in the scene, it does this by using the given that every object has to edges on every row where it lives
         for k in range(int(edges_row/2)):
@@ -98,7 +98,7 @@ def find_upper_extreme(Matrix_test1, Scaling):
             #k is in this case revering the objects, thus will write a value to the upper_limmit how k=0 (thus the first object)
             if object_matrix[k,1]==0:
                 object_matrix[k, 0]=i
-                j = np.nonzero(Matrix_test1[i,:] == 1)[1][0]
+                j = np.nonzero(Matrix_test[i,:] == 1)[1][0]
                 object_matrix[k,1]=j
     object_matrix = object_matrix[~np.all(object_matrix == 0, axis=1)]  # Delete all rows that are only zero 
     return object_matrix
@@ -160,13 +160,11 @@ def left_edge_finder(Matrix_edges, i, j, edge_gap = 3):
 #-----------------------Below here testing the code with the test matrices----------------------------------
 
 
-find_upper_extreme(Matrix_test1, Scaling)
 plt.figure()
 plt.imshow(Matrix_test1)
 plt.figure()
 plt.imshow(Matrix_test2)
-print(object_matrix[0, 1])
-print(find_upper_extreme(Matrix_test1, Scaling))
+print(find_upper_extreme(Matrix_test2, Scaling))
 print(object_matrix[0,0])
 
 
