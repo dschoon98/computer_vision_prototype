@@ -73,7 +73,11 @@ print(cols)
 def loop_until_hit(bin_mat,rows,cols,k,i_lower):
     global object_matrix
     global switch_var 
+<<<<<<< HEAD
     for i in range(i_lower+1,rows):    
+=======
+    for i in range(int(i_lower+1),int(rows)):    
+>>>>>>> 1024f618a9a225a3adc6ccd98bc1594f2fdf886d
         for j in range(cols):
             if bin_mat[i,j] == 1:
                 break
@@ -208,10 +212,10 @@ k = 0
 i_lower = 0
 
 while switch_var:
-    
-    [i,j] = loop_until_hit(bin_mat,rows,cols,k,i_lower)
-    
-    lower_maxima_finder(bin_mat,i,j,k)
+    [i,j] = loop_until_hit(bin_mat,rows,cols,k,object_matrix[k,6])
+    right_maxima_finder(bin_mat,i,j,k)
+    left_maxima_finder(bin_mat,i,j,k)
+    lower_maxima_finder(bin_mat,object_matrix[k,2],object_matrix[k,3],k)
     
     rows_left = int(rows - object_matrix[k,6])
     
