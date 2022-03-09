@@ -1,0 +1,20 @@
+
+Tasks for functions:
+
+Screening loop
+
+ - Daam: Screening loop needs to get an updated value, which is the lower maxima + k
+
+Outputs : 			- First i,j coordinate the loop "hits"
+				- GLOBAL k from GLOBAL object_matrix
+				- break when hitting
+
+ - Daam: Maxima finder 
+
+Outputs :	  - Left/Right/Down maxima
+
+- File management
+
+
+
+
