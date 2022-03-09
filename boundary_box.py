@@ -70,41 +70,38 @@ object_matrix = np.zeros([object_amount, 5])
 ##The boundary size away from the limits of the object will be determined by the size of the object (its volume) and the scaling factor.
 #boundary_matrix = np.zeros([rows,cols])
 
-bin_mat = Matrix_test2
+bin_mat = Matrix_test1
 rows = len(bin_mat[:,1])
 cols = len(bin_mat[1,:])
+k = 0
+i_lower = 0
 
-#This function will find the extremes of the different objects that are in the scene and will display them in the object_matrix
-def loop_until_hit(rows,cols):
+
+#This function will loop the image until it finds an object
+def loop_until_hit(rows,cols,k,i_lower):
     global object_matrix
     global bin_mat
-    for i in range(rows):
+    if k>0:
+#        i_lower = object_matrix[k-1, 6]  # 6th index for i_lower
+        sliced_mat = bin_mat[i_lower:,:]
+    else:
+        sliced_mat = bin_mat
+    
+    for i in range(rows):    
         for j in range(cols):
-            if bin_mat[i,j] == 1:
+            if sliced_mat[i,j] == 1:
                 break
         break
-    return i,j
+    k += 1
+    return i,j,k
 
 
 
-i = loop_until_hit(rows,cols)[0]
-j = loop_until_hit(rows,cols)
+loop_until_hit(rows, cols, k)
 
-[lower,left,right] = maxima_finder(i,j)
+[i_lower, j_lower, i_left, j_left, i_right, j_right] = maxima_finder(i,j,k)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+rows = rows - i_lower
 
 
 #
@@ -136,77 +133,6 @@ j = loop_until_hit(rows,cols)
 #
 
 
-
-##This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
-#def right_edge_finder(Matrix_edges, i, j, edge_gap = 3):
-#
-#    no_land_count=0
-#    while(no_land_count <= edge_gap):
-#        if j==cols-1:
-#            break
-#        if Matrix_edges[i, j+1] == 1:
-#            j+=1
-#        elif Matrix_edges[i+1, j+1] == 1:
-#            i+=1
-#            j+=1
-#        elif Matrix_edges[i+1, j] == 1:
-#            i+=1
-#        else:
-#            #break the while if the edge of matrix is found.
-#            if j+1==cols-1:
-#                break
-#            no_land_count+=1
-#            j+=1
-#            if no_land_count>edge_gap:
-#                j-=edge_gap
-#
-#    return j
-#
-##This function finds the left most edge of the object from the most upper coordinate of the object edge.
-#def left_edge_finder(Matrix_edges, i, j, edge_gap = 3):
-#
-#    no_land_count=0
-#    while(no_land_count <= edge_gap):
-#        if j==0:
-#            break
-#        if Matrix_edges[i, j-1] == 1:
-#            j-=1
-#        elif Matrix_edges[i-1, j-1] == 1:
-#            i-=1
-#            j-=1
-#        elif Matrix_edges[i-1, j] == 1:
-#            i-=1
-#        else:
-#            #break the while if the edge of matrix is found.
-#            if j-1==0:
-#                break
-#            no_land_count+=1
-#            j-=1
-#            if no_land_count>edge_gap:
-#                j+=edge_gap
-#
-#
-#    return j
-#
-##-----------------------Below here testing the code with the test matrices----------------------------------
-#
-#
-#plt.figure()
-#plt.imshow(Matrix_test1)
-#plt.figure()
-#plt.imshow(Matrix_test2)
-#
-#print("Object matrix first object upper_height x coordinate: ", object_matrix[0, 1])
-#print("Object matrix second object upper_height y coordinate: ", object_matrix[0,0])
-#plt.show()
-#
-#
-#
-#edges = [left_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1])) , right_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1]))]
-#
-#print(Matrix_test2.shape)
-#
-#                
 
 
         
