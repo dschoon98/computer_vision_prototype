@@ -165,10 +165,10 @@ plt.figure()
 plt.imshow(Matrix_test1)
 plt.figure()
 plt.imshow(Matrix_test2)
-print(object_matrix[0, 1])
+print("Object matrix first object upper_height x coordinate: ", object_matrix[0, 1])
+print("Object matrix second object upper_height y coordinate: ", object_matrix[0,0])
 print(find_upper_extreme(Matrix_test1, Scaling))
-print(object_matrix[0,0])
-
+plt.show()
 
 
 edges = [left_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1])) , right_edge_finder(Matrix_test1, int(object_matrix[0,0]), int(object_matrix[0,1]))]
