@@ -58,87 +58,117 @@ Matrix_test2 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 ])
+
+Matrix_test3 = np.matrix([
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+])
 #Change the description of this matrix!!!!!!!!  
 object_matrix = np.zeros([object_amount, 8])
-bin_mat = Matrix_test2
-global switch_var
+bin_mat = Matrix_test3
+
 switch_var = 1
 rows = bin_mat.shape[0]
 cols = bin_mat.shape[1]
 
-
+going_left = 1
+k= 0
+hit = 0
 def scanning(i_start,i_end,j_start,j_end):
+    global object_matrix
     global switch_var 
-
+    global hit 
+    global k
+    global going_left
+    global steps_left
+    
     for i in range(int(i_start),int(i_end)):            
         for j in range(int(j_start),int(j_end)):
+            print('i_end = ',i_end)
             if bin_mat[i,j] == 1:
-                        break
-        if bin_mat[i,j] == 1:
+                hit = 1
+                break
+        if hit:
             break
-        if i==rows:
+        
+        if i==rows-1:
             switch_var = 0
-    return i,j
+    if not hit:
+        going_left = 0
+ 
+    if hit:
+        if going_left:
+            object_matrix[k,0] = i
+            object_matrix[k,1] = j
+            right_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1])
+            left_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1])
+            lower_maxima_finder(bin_mat,object_matrix[k,2],object_matrix[k,3])
+        else:
+            object_matrix[k,0] = i
+            object_matrix[k,1] = j
+            right_maxima_finder(bin_mat,object_matrix[k-steps_left,0],object_matrix[k-steps_left,1])
+            left_maxima_finder(bin_mat,object_matrix[k-steps_left,0],object_matrix[k-steps_left,1])
+            lower_maxima_finder(bin_mat,object_matrix[k-steps_left,2],object_matrix[k-steps_left,3])
+        
+        k += 1
             
 #This function will loop the image until it finds an object
-def loop_until_hit(bin_mat,rows,cols,k,i_lower,j_left,j_right):
+def loop_until_hit(bin_mat,rows,cols,i_lower,j_left,j_right):
     global object_matrix
-
-    if k>0:
-        # When the bottom of the previous object is in the shadow of the next object       
-        if np.sum(bin_mat[int(i_lower),:int(j_left)])>0:
+    global hit
+    global k
+    global going_left
+    global steps_left
+    
+    if not first_run:
+        
+        if going_left:
+                
+            # When the bottom of the previous object is in the shadow of the next object       
             i_start = object_matrix[k-1,0]
-            j_end = object_matrix[k-1,5]     # = j_left[-1]
-            [i, j] = scanning(i_start,rows,0,j_end-1)    # Scanning the area to the LEFT of the bottom part of the previous object
-      
-        # When the bottom of the previous object is casting a shadow over the next object 
-        if np.sum(bin_mat[int(i_lower),int(j_right):])>0:
-            i_start = object_matrix[k-1,0]
-            j_start = object_matrix[k-1,7]
-            [i,j] = scanning(i_start,rows,j_start+1,cols) # Scanning the area to the RIGHT of the bottom part of the previous object
+            i_end = object_matrix[k-1,6]
+            j_end = object_matrix[k-1,5] - 1    # = j_left[-1]
+            
+            hit = 0
+            scanning(i_start,i_end,0,j_end)    # Scanning the area to the LEFT of the bottom part of the previous object
+            steps_left += 1
 
-
+        if not going_left:
+            i_start = object_matrix[k-steps_left,0]
+            i_end = object_matrix[k-steps_left,6]
+            j_start = object_matrix[k-steps_left,7] + 1
+            j_end = cols
+            hit = 0
+            scanning(i_start,i_end,j_start,cols) # Scanning the area to the RIGHT of the bottom part of the previous object
+            steps_left = 0
+            
     else:
-        [i,j] = scanning(0,rows,0,cols)
-
-    object_matrix[k,0] = i
-    object_matrix[k,1] = j
-
-
-
-
-
-#
-##SHOULD BE IMPROVED FOR FINDING OBJECTS STACKED ABOVE EACH OTHER AND WITH SAME UPPER HEIGHT (should pass test2 and a test 3 that still has to be made):
-#def (Matrix_test, Scaling):
-#    global boundary_matrix;
-#    global object_matrix;
-#
-#    #This loop checks for every object wh    cols = len(bin_mat[1,:])
-#at it's upper_height is
-#    #And also is responisble for the the identification of the objects, the highest object will be object 1 and the one below that 2 etc. etc.
-#    #Should break if the object_amount limit is reached
-#    #Should also do something in the case two objects are vertically stacked
-#    for i in range(rows):
-#        edges_row=0
-#        #Checks for every row if there are edges present, the edges will always come in pairs
-#        for j in range(cols):
-#            if Matrix_test[i,j]==1:
-#                edges_row+=1
-#        #This range below checks how many objects are found in the scene, it does this by using the given that every object has to edges on every row where it lives
-#        for k in range(int(edges_row/2)):
-#            #zero in this case means there is no upper_height assigned or simply not there
-#            #k is in this case revering the objects, thus will write a value to the upper_limmit how k=0 (thus the first object)
-#            if object_matrix[k,1]==0:
-#                object_matrix[k, 0]=i
-#                j = np.nonzero(Matrix_test[i,:] == 1)[1][0]
-#                object_matrix[k,1]=j
-#    return object_matrix
-#
+        hit = 0
+        scanning(0,rows,0,cols) 
+        
 
 #This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
-def right_maxima_finder(Matrix_edges, i, j, k, edge_gap = 0):
-
+def right_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
+    global k
     global object_matrix;
     no_land_count=0
     while(no_land_count <= edge_gap):
@@ -167,8 +197,8 @@ def right_maxima_finder(Matrix_edges, i, j, k, edge_gap = 0):
     
 
 #This function finds the left most edge of the object from the most upper coordinate of the object edge.
-def left_maxima_finder(Matrix_edges, i, j, k, edge_gap = 0):
-
+def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
+    global k
     global object_matrix;
     no_land_count=0
     while(no_land_count <= edge_gap):
@@ -194,7 +224,8 @@ def left_maxima_finder(Matrix_edges, i, j, k, edge_gap = 0):
 
     return j
 
-def lower_maxima_finder(Matrix_edges, i_right, j_right, k_object, edge_gap = 0):
+def lower_maxima_finder(Matrix_edges, i_right, j_right, edge_gap = 0):
+    global k
     global object_matrix;
     no_land_count=0
     while(no_land_count <= edge_gap):
@@ -210,27 +241,20 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right, k_object, edge_gap = 0):
         else:
             #This effectively breaks the while loop, which is intended as there is no use for the edge_gap code anymore
             no_land_count+=1
-    object_matrix[k_object, 6]=i_right
-    object_matrix[k_object, 7]=j_right
+    object_matrix[k, 6]=i_right
+    object_matrix[k, 7]=j_right
 
 
-
-
-k = 0
+first_run = 1
+steps_left = 0 
 while switch_var:
-    print('k = ',k)
+    
     if k>0:
-        loop_until_hit(bin_mat,rows,cols,k,object_matrix[k-1,6],object_matrix[k-1,5],object_matrix[k-1,3])
-    else: 
-        loop_until_hit(bin_mat,rows,cols,k,0,0,0)
-    right_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1],k)
-    left_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1],k)
-    lower_maxima_finder(bin_mat,object_matrix[k,2],object_matrix[k,3],k)
-    
-    
-    
-    rows_left = int(rows - object_matrix[k,6])
-    k += 1
+        loop_until_hit(bin_mat,rows,cols,object_matrix[k-1,6],object_matrix[k-1,5],object_matrix[k-1,3])
+    elif first_run: 
+        loop_until_hit(bin_mat,rows,cols,0,0,0)
+        first_run = 0
+    print('k (while loop) = ',k)
     
 
 object_matrix = object_matrix[~np.all(object_matrix == 0, axis=1)]  # Delete all rows that are only zero 
