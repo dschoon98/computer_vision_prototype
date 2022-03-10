@@ -88,6 +88,7 @@ def left_right_scanner():
             going_left=0
     
     while not going_left:
+        scanning(i_start, i_end, j_start, j_end, bin_mat)
         
         
         
@@ -118,7 +119,6 @@ def right_maxima_finder(bin_mat, i, j):
             i+=1
         else:
             break
-            
     object_matrix[k,2]=i
     object_matrix[k,3]=j
 
@@ -129,8 +129,8 @@ def right_maxima_finder(bin_mat, i, j):
 def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
     global k
     global object_matrix;
-    no_land_count=0
-    while(no_land_count <= edge_gap):
+
+    while True:
         if j==0:
             break
         if Matrix_edges[int(i), int(j-1)] == 1:
@@ -141,23 +141,17 @@ def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
         elif Matrix_edges[int(i-1), int(j)] == 1:
             i-=1
         else:
-            #break the while if the edge of matrix is found.
-            if j-1==0:
-                break
-            no_land_count+=1
-            j-=1
-            if no_land_count>edge_gap:
-                j+=edge_gap
+            break
     object_matrix[k,4]=i
     object_matrix[k,5]=j
 
     return j
 
-def lower_maxima_finder(Matrix_edges, i_right, j_right, edge_gap = 0):
+def lower_maxima_finder(Matrix_edges, i_right, j_right):
     global k
     global object_matrix;
-    no_land_count=0
-    while(no_land_count <= edge_gap):
+
+    while True:
         if i_right==rows-1:
             break
         if Matrix_edges[int(i_right+1), int(j_right)] == 1:
@@ -168,8 +162,7 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right, edge_gap = 0):
         elif Matrix_edges[int(i_right),int(j_right-1)] == 1:
             j_right-=1
         else:
-            #This effectively breaks the while loop, which is intended as there is no use for the edge_gap code anymore
-            no_land_count+=1
+            break
     object_matrix[k, 6]=i_right
     object_matrix[k, 7]=j_right
 
