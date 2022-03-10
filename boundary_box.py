@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 #The scaling factor determines how large the boundary boxes will be around the object.
 Scaling = 1;
 
@@ -61,58 +60,46 @@ Matrix_test2 = np.matrix([
 ])
 #Change the description of this matrix!!!!!!!!  
 object_matrix = np.zeros([object_amount, 8])
-bin_mat = Matrix_test1
-
+bin_mat = Matrix_test2
+global switch_var
 switch_var = 1
-rows = len(bin_mat[:,1])
+rows = bin_mat.shape[0]
 cols = bin_mat.shape[1]
 
 
+def scanning(i_start,i_end,j_start,j_end):
+    global switch_var 
+
+    for i in range(int(i_start),int(i_end)):            
+        for j in range(int(j_start),int(j_end)):
+            if bin_mat[i,j] == 1:
+                        break
+        if bin_mat[i,j] == 1:
+            break
+        if i==rows:
+            switch_var = 0
+    return i,j
+            
 #This function will loop the image until it finds an object
 def loop_until_hit(bin_mat,rows,cols,k,i_lower,j_left,j_right):
     global object_matrix
-    global switch_var 
-    print(i_lower)
-    i_start = 0
-    j_start = 0
+
     if k>0:
         # When the bottom of the previous object is in the shadow of the next object       
         if np.sum(bin_mat[int(i_lower),:int(j_left)])>0:
             i_start = object_matrix[k-1,0]
             j_end = object_matrix[k-1,5]     # = j_left[-1]
-            for i in range(int(i_start),int(rows)):            
-                for j in range(0,int(j_end)):
-                    if bin_mat[i,j] == 1:
-                        break
-                if bin_mat[i,j] == 1:
-                    break
-                if i==rows:
-                    switch_var = 0
-        
+            [i, j] = scanning(i_start,rows,0,j_end-1)    # Scanning the area to the LEFT of the bottom part of the previous object
+      
         # When the bottom of the previous object is casting a shadow over the next object 
         if np.sum(bin_mat[int(i_lower),int(j_right):])>0:
             i_start = object_matrix[k-1,0]
             j_start = object_matrix[k-1,7]
-            for i in range(int(i_start),int(rows)):            
-                for j in range(int(j_start),int(cols)):
-                    if bin_mat[i,j] == 1:
-                        break
-                if bin_mat[i,j] == 1:
-                    break
-                if i==rows:
-                    switch_var = 0
-                    
+            [i,j] = scanning(i_start,rows,j_start+1,cols) # Scanning the area to the RIGHT of the bottom part of the previous object
+
+
     else:
-        for i in range(int(i_start),int(rows)):            
-            for j in range(int(j_start),int(cols)):
-                if bin_mat[i,j] == 1:
-                    break
-            if bin_mat[i,j] == 1:
-                break
-            if i==rows:
-                switch_var = 0        
-    print('i start= ',i_start)
-    print('j start= ',j_start)
+        [i,j] = scanning(0,rows,0,cols)
 
     object_matrix[k,0] = i
     object_matrix[k,1] = j
@@ -146,7 +133,6 @@ def loop_until_hit(bin_mat,rows,cols,k,i_lower,j_left,j_right):
 #                object_matrix[k, 0]=i
 #                j = np.nonzero(Matrix_test[i,:] == 1)[1][0]
 #                object_matrix[k,1]=j
-#    object_matrix = object_matrix[~np.all(object_matrix == 0, axis=1)]  # Delete all rows that are only zero 
 #    return object_matrix
 #
 
@@ -228,18 +214,15 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right, k_object, edge_gap = 0):
     object_matrix[k_object, 7]=j_right
 
 
-bin_mat = Matrix_test1
+
 
 k = 0
-
-
 while switch_var:
+    print('k = ',k)
     if k>0:
         loop_until_hit(bin_mat,rows,cols,k,object_matrix[k-1,6],object_matrix[k-1,5],object_matrix[k-1,3])
     else: 
         loop_until_hit(bin_mat,rows,cols,k,0,0,0)
-        
-        
     right_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1],k)
     left_maxima_finder(bin_mat,object_matrix[k,0],object_matrix[k,1],k)
     lower_maxima_finder(bin_mat,object_matrix[k,2],object_matrix[k,3],k)
@@ -249,6 +232,9 @@ while switch_var:
     rows_left = int(rows - object_matrix[k,6])
     k += 1
     
+
+object_matrix = object_matrix[~np.all(object_matrix == 0, axis=1)]  # Delete all rows that are only zero 
+
 
         
 
