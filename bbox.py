@@ -88,6 +88,12 @@ def left_right_scanner():
             going_left=0
     
     while not going_left:
+#the k that is depicted here is wrong should be of shadowcaster
+#stored in separate array?
+        i_start=object_matrix[k,0]
+        i_end=object_matrix[k,6]
+        j_start=object_matrix[k,4]+1
+        j_end=cols
         scanning(i_start, i_end, j_start, j_end, bin_mat)
         
         
