@@ -78,10 +78,12 @@ def x_ray(bin_mat):
             stopvar_j=0
             for j in range(int(j_start), int(j_end)):
                 for K in range(k):
+                    #The problem here is that it only passes through the first object it encounters
                     if i>=object_matrix[K,0]-1 and i<=object_matrix[K,6]+1:
                         if j>=object_matrix[K,5]:
+                            if i==6 and j==14:
+                                print("Conditions were met")
                             j+=(object_matrix[K,3]-object_matrix[K,5])+1
-                            print(j)
                             if j>=j_end-1:
                                 stopvar_j=1
                                 break
@@ -89,7 +91,6 @@ def x_ray(bin_mat):
                     break
                 
                 if bin_mat[int(i),int(j)]==1:
-                    print("HIT!")
                     object_matrix[k,0]=i
                     object_matrix[k,1]=j
                     stopvar=1
