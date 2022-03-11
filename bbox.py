@@ -122,14 +122,20 @@ def left_right_scanner():
                     first_time_right=0 
                 else:
                     #Should start again the whole sequence but then from the bottom of k_shadowcaster
-                    first_time_right=1
-                    going_left=0
+                    #Thus also update the scan_area
+                    going_left=1
             else:
                 scanning(i_start, i_end, j_start, j_end, bin_mat)
                 if hit:
-
-
+                    i_start=object_matrix[k,0]
+                    i_end=object_matrix[k,6]
+                    j_start=object_matrix[k,4]+1
+                    j_end=cols
+                    k+=1
                 else:
+                    #Should start again from the bottom of the shadowcaster
+                    #Update scan area, so that function does the correct thing
+                    going_left=1
 
                 
 
