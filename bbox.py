@@ -75,8 +75,22 @@ def left_right_scanner():
     j_start=0
     j_end=cols
     
+    #Psuedo code:
+    #First the largest object is found in scanning, while scanning the full resolution of the image
+    #After which the scanning window is adjusted, so that only the left side of the object is scanned
+    #Thus the scan parameters are adjusted
+    #The object is incremented so that the correct row of the object_matrix is written
+    #The scanning function will indicate whether or not in found a hit
+    #If there isn't a hit, it will stop update the search window to look left.
+    #This is the tricky part:
+    #Now we go back to the first object and go scan right from there we know what the shadowcaster object is
+    #,because of the super variable K_SHADOWCASTER.
+    #But after the first time it went right, we should use the normal k, because we have written a new object to
+    #the current k
+
 
     while going_left:
+        K_SHADOWCASTER=k
         scanning(i_start, i_end, j_start, j_end, bin_mat)
         if hit:
             i_start=object_matrix[k,0]
@@ -90,9 +104,9 @@ def left_right_scanner():
     while not going_left:
 #the k that is depicted here is wrong should be of shadowcaster
 #stored in separate array?
-        i_start=object_matrix[k,0]
-        i_end=object_matrix[k,6]
-        j_start=object_matrix[k,4]+1
+        i_start=object_matrix[K_SHADOWCASTER,0]
+        i_end=object_matrix[K_SHADOWCASTER,6]
+        j_start=object_matrix[K_SHADOWCASTER,4]+1
         j_end=cols
         scanning(i_start, i_end, j_start, j_end, bin_mat)
         
