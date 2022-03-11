@@ -75,20 +75,13 @@ def x_ray(bin_mat):
     while running:
         stopvar=0
         for i in range(int(i_start), int(i_end)):
-            stopvar_j=0
-            for j in range(int(j_start), int(j_end)):
+            xr=iter(range(int(j_start), int(j_end)))
+            for j in xr:
                 for K in range(k):
-                    #The problem here is that it only passes through the first object it encounters
-                    if i>=object_matrix[K,0]-1 and i<=object_matrix[K,6]+1:
-                        if j>=object_matrix[K,5]:
-                            if i==6 and j==14:
-                                print("Conditions were met")
-                            j+=(object_matrix[K,3]-object_matrix[K,5])+1
-                            if j>=j_end-1:
-                                stopvar_j=1
-                                break
-                if stopvar_j:
-                    break
+                    if i>=object_matrix[K,0]-1 and i<=object_matrix[K,6]+1 and j>=object_matrix[K,5]-1 and j<=object_matrix[K,3]+1:
+                        for z in range(int((object_matrix[K,3]-object_matrix[K,5])+1)):
+                            next(xr)
+            
                 
                 if bin_mat[int(i),int(j)]==1:
                     object_matrix[k,0]=i
@@ -101,10 +94,9 @@ def x_ray(bin_mat):
                 lower_maxima_finder(bin_mat, object_matrix[k,2], object_matrix[k,3])
                 i_start=object_matrix[k,0]
                 k+=1
-                #Het programma stopt nu alleen als hij het maximaal aantal objecten heeft gevonden, dit moet anders 
-                if k==10:
-                    running=0
                 break
+            if j==cols-1 and i==rows-1:
+                running=0
  
         
         
