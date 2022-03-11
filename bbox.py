@@ -43,14 +43,13 @@ def scanning(i_start, i_end, j_start,j_end, bin_mat):
     global hit
     stopvar=0
     
-    for i in range(i_start, i_end):
-        for j in range(j_start, j_end):
+    for i in range(int(i_start), int(i_end)):
+        for j in range(int(j_start), int(j_end)):
             if bin_mat[i,j] == 1:
                 object_matrix[k, 0] =i
                 object_matrix[k, 1] =j
                 stopvar=1
                 hit=1
-                print(i,j)
                 break
         if not stopvar:
             hit=0
@@ -61,15 +60,65 @@ def scanning(i_start, i_end, j_start,j_end, bin_mat):
             break
             
         
+def x_ray(bin_mat):
+    global object_matrix
+    global hit
+    global object_amount
+    i_start=0
+    i_end=rows
+    j_start=0
+    j_end=cols
+    global k
+    stopvar=0
+    running=1
+
+    while running:
+        stopvar=0
+        for i in range(int(i_start), int(i_end)):
+            stopvar_j=0
+            for j in range(int(j_start), int(j_end)):
+                for K in range(k):
+                    if i>=object_matrix[K,0]-1 and i<=object_matrix[K,6]+1:
+                        if j>=object_matrix[K,5]:
+                            j+=(object_matrix[K,3]-object_matrix[K,5])+1
+                            print(j)
+                            if j>=j_end-1:
+                                stopvar_j=1
+                                break
+                if stopvar_j:
+                    break
+                
+                if bin_mat[int(i),int(j)]==1:
+                    print("HIT!")
+                    object_matrix[k,0]=i
+                    object_matrix[k,1]=j
+                    stopvar=1
+                    break
+            if stopvar:
+                right_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
+                left_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
+                lower_maxima_finder(bin_mat, object_matrix[k,2], object_matrix[k,3])
+                i_start=object_matrix[k,0]
+                k+=1
+                #Het programma stopt nu alleen als hij het maximaal aantal objecten heeft gevonden, dit moet anders 
+                if k==10:
+                    running=0
+                break
+ 
+        
+        
+
+
+
+
         
         
         
-def left_right_scanner():
+def object_finder(bin_mat):
     global k
     global object_matrix
     global rows
     global cols
-    global going_left
     i_start=0
     i_end=rows
     j_start=0
@@ -92,8 +141,8 @@ def left_right_scanner():
     while running: 
         going_left=1
         first_time_right=1
+        K_SHADOWCASTER=k
         while going_left:
-            K_SHADOWCASTER=k
             scanning(i_start, i_end, j_start, j_end, bin_mat)
             if hit:
                 i_start=object_matrix[k,0]
@@ -107,42 +156,52 @@ def left_right_scanner():
         while not going_left:
             #Below should only run the first time after going left
             if first_time_right:
-
+                print("First time going right!")
+                print("Shadow caster: ", K_SHADOWCASTER)
                 i_start=object_matrix[K_SHADOWCASTER,0]
                 i_end=object_matrix[K_SHADOWCASTER,6]
-                j_start=object_matrix[K_SHADOWCASTER,4]+1
+                j_start=object_matrix[K_SHADOWCASTER,3]+1
                 j_end=cols
+                print(i_start, i_end, j_start, j_end)
                 scanning(i_start, i_end, j_start, j_end, bin_mat)
                 if hit:
                     i_start=object_matrix[k,0]
                     i_end=object_matrix[k,6]
-                    j_start=object_matrix[k,4]+1
+                    j_start=object_matrix[k,3]+1
                     j_end=cols
                     k+=1
-                    first_time_right=0 
+                    first_time_right=0
                 else:
                     #Should start again the whole sequence but then from the bottom of k_shadowcaster
                     #Thus also update the scan_area
+                    i_start=object_matrix[K_SHADOWCASTER,6]
+                    i_end=rows
+                    j_start=0
+                    j_end=cols
                     going_left=1
+                    running=0
             else:
                 scanning(i_start, i_end, j_start, j_end, bin_mat)
                 if hit:
                     i_start=object_matrix[k,0]
                     i_end=object_matrix[k,6]
-                    j_start=object_matrix[k,4]+1
+                    j_start=object_matrix[k,3]+1
                     j_end=cols
                     k+=1
                 else:
                     #Should start again from the bottom of the shadowcaster
                     #Update scan area, so that function does the correct thing
+                    i_start=object_matrix[K_SHADOWCASTER,6]
+                    i_end=rows
+                    j_start=0
+                    j_end=cols
                     going_left=1
+                    running=0
 
-                
 
-        
-        
-        
-        
+#Where will the whole loop end?:
+#We want the programm to stop when the programm has scanned the up until the last row
+    
     
     
     
@@ -171,6 +230,7 @@ def right_maxima_finder(bin_mat, i, j):
             break
     object_matrix[k,2]=i
     object_matrix[k,3]=j
+
 
 
     
@@ -215,5 +275,12 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right):
             break
     object_matrix[k, 6]=i_right
     object_matrix[k, 7]=j_right
+    
+    
+    
+#----Testing------
+
+
+x_ray(bin_mat)
 
         
