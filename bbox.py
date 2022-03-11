@@ -74,6 +74,7 @@ def left_right_scanner():
     i_end=rows
     j_start=0
     j_end=cols
+    running=1
     
     #Psuedo code:
     #First the largest object is found in scanning, while scanning the full resolution of the image
@@ -88,27 +89,50 @@ def left_right_scanner():
     #But after the first time it went right, we should use the normal k, because we have written a new object to
     #the current k
 
+    while running: 
+        going_left=1
+        first_time_right=1
+        while going_left:
+            K_SHADOWCASTER=k
+            scanning(i_start, i_end, j_start, j_end, bin_mat)
+            if hit:
+                i_start=object_matrix[k,0]
+                i_end=object_matrix[k,6]
+                j_start=0
+                j_end=object_matrix[k, 5]-1
+                k+=1
+            else:
+                going_left=0
+        
+        while not going_left:
+            #Below should only run the first time after going left
+            if first_time_right:
 
-    while going_left:
-        K_SHADOWCASTER=k
-        scanning(i_start, i_end, j_start, j_end, bin_mat)
-        if hit:
-            i_start=object_matrix[k,0]
-            i_end=object_matrix[k,6]
-            j_start=0
-            j_end=object_matrix[k, 5]-1
-            k+=1
-        else:
-            going_left=0
-    
-    while not going_left:
-#the k that is depicted here is wrong should be of shadowcaster
-#stored in separate array?
-        i_start=object_matrix[K_SHADOWCASTER,0]
-        i_end=object_matrix[K_SHADOWCASTER,6]
-        j_start=object_matrix[K_SHADOWCASTER,4]+1
-        j_end=cols
-        scanning(i_start, i_end, j_start, j_end, bin_mat)
+                i_start=object_matrix[K_SHADOWCASTER,0]
+                i_end=object_matrix[K_SHADOWCASTER,6]
+                j_start=object_matrix[K_SHADOWCASTER,4]+1
+                j_end=cols
+                scanning(i_start, i_end, j_start, j_end, bin_mat)
+                if hit:
+                    i_start=object_matrix[k,0]
+                    i_end=object_matrix[k,6]
+                    j_start=object_matrix[k,4]+1
+                    j_end=cols
+                    k+=1
+                    first_time_right=0 
+                else:
+                    #Should start again the whole sequence but then from the bottom of k_shadowcaster
+                    first_time_right=1
+                    going_left=0
+            else:
+                scanning(i_start, i_end, j_start, j_end, bin_mat)
+                if hit:
+
+
+                else:
+
+                
+
         
         
         
