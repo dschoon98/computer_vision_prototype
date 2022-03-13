@@ -54,9 +54,9 @@ def edge_finder(im):
     plt.title('Edges only')     
     return matrix_edge
 
-image_name = 'images/image1.jpeg'
-im = cv2.imread(image_name);
-im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
+#image_name = 'images/image1.jpeg'
+#im = cv2.imread(image_name);
+#im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
 
 #im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
 #plt.figure()
