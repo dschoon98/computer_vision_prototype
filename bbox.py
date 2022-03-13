@@ -3,7 +3,7 @@ import edge_definer as edge
 import cv2
 import matplotlib.pyplot as plt
 
-resize_factor = 20
+
 
 Matrix_test3 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -29,6 +29,10 @@ Matrix_test3 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 ])
 
+###################### 
+#Image processing
+
+resize_factor = 20
 image_name = 'images/image1.jpeg'
 im = cv2.imread(image_name);
 im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
@@ -38,9 +42,9 @@ plt.figure()
 plt.imshow(im_rgb)
 plt.title('Resized image with blur')
 
-
 matrix_edge = edge.edge_finder(im)
 
+####################
 
 Matrix_test3 = matrix_edge
 
