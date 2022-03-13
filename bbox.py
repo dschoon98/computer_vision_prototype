@@ -1,4 +1,9 @@
 import numpy as np
+import edge_definer as edge
+import cv2
+import matplotlib.pyplot as plt
+
+resize_factor = 20
 
 Matrix_test3 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -24,8 +29,22 @@ Matrix_test3 = np.matrix([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 ])
 
+image_name = 'images/image1.jpeg'
+im = cv2.imread(image_name);
+im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
+im = cv2.GaussianBlur(im,(3,3),0)
+im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
+plt.figure()
+plt.imshow(im_rgb)
+plt.title('Resized image with blur')
 
-object_amount =10
+
+matrix_edge = edge.edge_finder(im)
+
+
+Matrix_test3 = matrix_edge
+
+object_amount =100
 
 object_matrix = np.zeros([object_amount, 8])
 bin_mat = Matrix_test3
@@ -105,92 +124,92 @@ def x_ray(bin_mat):
 
 
         
-        
-        
-def object_finder(bin_mat):
-    global k
-    global object_matrix
-    global rows
-    global cols
-    i_start=0
-    i_end=rows
-    j_start=0
-    j_end=cols
-    running=1
-    
-    #Psuedo code:
-    #First the largest object is found in scanning, while scanning the full resolution of the image
-    #After which the scanning window is adjusted, so that only the left side of the object is scanned
-    #Thus the scan parameters are adjusted
-    #The object is incremented so that the correct row of the object_matrix is written
-    #The scanning function will indicate whether or not in found a hit
-    #If there isn't a hit, it will stop update the search window to look left.
-    #This is the tricky part:
-    #Now we go back to the first object and go scan right from there we know what the shadowcaster object is
-    #,because of the super variable K_SHADOWCASTER.
-    #But after the first time it went right, we should use the normal k, because we have written a new object to
-    #the current k
-
-    while running: 
-        going_left=1
-        first_time_right=1
-        K_SHADOWCASTER=k
-        while going_left:
-            scanning(i_start, i_end, j_start, j_end, bin_mat)
-            if hit:
-                i_start=object_matrix[k,0]
-                i_end=object_matrix[k,6]
-                j_start=0
-                j_end=object_matrix[k, 5]-1
-                k+=1
-            else:
-                going_left=0
-        
-        while not going_left:
-            #Below should only run the first time after going left
-            if first_time_right:
-                print("First time going right!")
-                print("Shadow caster: ", K_SHADOWCASTER)
-                i_start=object_matrix[K_SHADOWCASTER,0]
-                i_end=object_matrix[K_SHADOWCASTER,6]
-                j_start=object_matrix[K_SHADOWCASTER,3]+1
-                j_end=cols
-                print(i_start, i_end, j_start, j_end)
-                scanning(i_start, i_end, j_start, j_end, bin_mat)
-                if hit:
-                    i_start=object_matrix[k,0]
-                    i_end=object_matrix[k,6]
-                    j_start=object_matrix[k,3]+1
-                    j_end=cols
-                    k+=1
-                    first_time_right=0
-                else:
-                    #Should start again the whole sequence but then from the bottom of k_shadowcaster
-                    #Thus also update the scan_area
-                    i_start=object_matrix[K_SHADOWCASTER,6]
-                    i_end=rows
-                    j_start=0
-                    j_end=cols
-                    going_left=1
-                    running=0
-            else:
-                scanning(i_start, i_end, j_start, j_end, bin_mat)
-                if hit:
-                    i_start=object_matrix[k,0]
-                    i_end=object_matrix[k,6]
-                    j_start=object_matrix[k,3]+1
-                    j_end=cols
-                    k+=1
-                else:
-                    #Should start again from the bottom of the shadowcaster
-                    #Update scan area, so that function does the correct thing
-                    i_start=object_matrix[K_SHADOWCASTER,6]
-                    i_end=rows
-                    j_start=0
-                    j_end=cols
-                    going_left=1
-                    running=0
-
+#        
+#        
+#def object_finder(bin_mat):
+#    global k
+#    global object_matrix
+#    global rows
+#    global cols
+#    i_start=0
+#    i_end=rows
+#    j_start=0
+#    j_end=cols
+#    running=1
+#    
+#    #Psuedo code:
+#    #First the largest object is found in scanning, while scanning the full resolution of the image
+#    #After which the scanning window is adjusted, so that only the left side of the object is scanned
+#    #Thus the scan parameters are adjusted
+#    #The object is incremented so that the correct row of the object_matrix is written
+#    #The scanning function will indicate whether or not in found a hit
+#    #If there isn't a hit, it will stop update the search window to look left.
+#    #This is the tricky part:
+#    #Now we go back to the first object and go scan right from there we know what the shadowcaster object is
+#    #,because of the super variable K_SHADOWCASTER.
+#    #But after the first time it went right, we should use the normal k, because we have written a new object to
+#    #the current k
+#
+#    while running: 
+#        going_left=1
+#        first_time_right=1
+#        K_SHADOWCASTER=k
+#        while going_left:
+#            scanning(i_start, i_end, j_start, j_end, bin_mat)
+#            if hit:
+#                i_start=object_matrix[k,0]
+#                i_end=object_matrix[k,6]
+#                j_start=0
+#                j_end=object_matrix[k, 5]-1
+#                k+=1
+#            else:
+#                going_left=0
+#        
+#        while not going_left:
+#            #Below should only run the first time after going left
+#            if first_time_right:
+#                print("First time going right!")
+#                print("Shadow caster: ", K_SHADOWCASTER)
+#                i_start=object_matrix[K_SHADOWCASTER,0]
+#                i_end=object_matrix[K_SHADOWCASTER,6]
+#                j_start=object_matrix[K_SHADOWCASTER,3]+1
+#                j_end=cols
+#                print(i_start, i_end, j_start, j_end)
+#                scanning(i_start, i_end, j_start, j_end, bin_mat)
+#                if hit:
+#                    i_start=object_matrix[k,0]
+#                    i_end=object_matrix[k,6]
+#                    j_start=object_matrix[k,3]+1
+#                    j_end=cols
+#                    k+=1
+#                    first_time_right=0
+#                else:
+#                    #Should start again the whole sequence but then from the bottom of k_shadowcaster
+#                    #Thus also update the scan_area
+#                    i_start=object_matrix[K_SHADOWCASTER,6]
+#                    i_end=rows
+#                    j_start=0
+#                    j_end=cols
+#                    going_left=1
+#                    running=0
+#            else:
+#                scanning(i_start, i_end, j_start, j_end, bin_mat)
+#                if hit:
+#                    i_start=object_matrix[k,0]
+#                    i_end=object_matrix[k,6]
+#                    j_start=object_matrix[k,3]+1
+#                    j_end=cols
+#                    k+=1
+#                else:
+#                    #Should start again from the bottom of the shadowcaster
+#                    #Update scan area, so that function does the correct thing
+#                    i_start=object_matrix[K_SHADOWCASTER,6]
+#                    i_end=rows
+#                    j_start=0
+#                    j_end=cols
+#                    going_left=1
+#                    running=0
+#
 
 #Where will the whole loop end?:
 #We want the programm to stop when the programm has scanned the up until the last row
