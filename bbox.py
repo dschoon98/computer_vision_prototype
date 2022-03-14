@@ -62,7 +62,7 @@ hit=0
 
 def scanning(i_start, i_end, j_start,j_end, bin_mat):
     global k
-    global object_matrixMatrix_test3 = matrix_edge
+    global object_matrix
 
     global hit
     stopvar=0
