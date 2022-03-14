@@ -228,6 +228,7 @@ def determine_optical_flow(image_names,graphics):
         plt.plot(range(n_images), ttc_over_time, label='Time-to-contact');
         plt.xlabel('Image')
         plt.ylabel('Time-to-contact')
+
 # Main script
-image_names = read_image_folder('images/','jpeg')
+image_names = read_image_folder('images/optic_flow','jpeg')
 determine_optical_flow(image_names,graphics=True)
