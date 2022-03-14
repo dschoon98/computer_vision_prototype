@@ -1,100 +1,89 @@
 import numpy as np
-import images
-import YUV_slices as YUV
+import matplotlib.pyplot as plt
 import cv2
-
-YUV.filter_color('images/image1.jpeg',50,300,0,120,160,220,resize_factor=5)
-
-cols = 400
-rows = 400
-#matrix_yuv = np.zeros([rows,cols],dtype=object)
-#for i in range(rows):
-#    for j in range(cols):
-#        temp_array=np.zeros(3)
-#        for k in range(3):
-#            temp_array[k] = np.random.rand()
-#            
-#        matrix_yuv[i,j] = temp_array
-#
-#print(matrix_yuv)        
+import time
+resize_factor = 10
 
 
-#matrix_yuv = np.array([[np.array([3,2,3]),np.array([1,2,3])],[np.array([1,2,3]),np.array([1,2,3])]])
+def filter_color(im, y_low, y_high, u_low, u_high, v_low, v_high, resize_factor):
+    YUV = cv2.cvtColor(im, cv2.COLOR_BGR2YUV);
+    Filtered = np.zeros([YUV.shape[0], YUV.shape[1]]);
+    for y in range(YUV.shape[0]):
+        for x in range(YUV.shape[1]):
+            if(YUV[y,x,0] >= y_low and YUV[y,x,0] <= y_high and \
+               YUV[y,x,1] >= u_low and YUV[y,x,1] <= u_high and \
+               YUV[y,x,2] >= v_low and YUV[y,x,2] <= v_high):
+                Filtered[y,x] = 1;
+    return Filtered
 
-simple_matrix_y = np.zeros([rows,cols])
-simple_matrix_u = np.zeros([rows,cols])
-simple_matrix_v = np.zeros([rows,cols])
-threshold_y = 0.5
-threshold_u = 0.5
-threshold_v = 0.5
-
-def update_simple_y(matrix_yuv,threshold):
-    global simple_matrix_y
-    for i in range(rows):
-        for j in range(cols):
-            if (matrix_yuv[i,j])[0] >= threshold:
-                simple_matrix_y[i,j] = 1
-
-def update_simple_u(matrix_yuv,threshold):
-    global simple_matrix_u
-    for i in range(rows):
-        for j in range(cols):
-            if (matrix_yuv[i,j])[1] >= threshold:
-                simple_matrix_u[i,j] = 1
-                
-def update_simple_v(matrix_yuv,threshold):
-    global simple_matrix_v
-    for i in range(rows):
-        for j in range(cols):
-            if (matrix_yuv[i,j])[2] >= threshold:
-                simple_matrix_v[i,j] = 1
-
-update_simple_y(matrix_yuv,threshold_y)
-update_simple_u(matrix_yuv,threshold_u)
-update_simple_v(matrix_yuv,threshold_v)
-
-
-
-def edge_definer(simple_matrix):
+def edge_definer(bin_mat):
+    rows = len(bin_mat[:,1])
+    cols = len(bin_mat[1,:])
     matrix_edge = np.zeros([rows,cols])
     for i in range(rows):
         temp_val = 0
         for j in range(cols):
-            if temp_val != simple_matrix[i,j]:
+            if temp_val != bin_mat[i,j]:
+                matrix_edge[i,j] = 1
+                if temp_val == 0:
+                    temp_val = 1
+                else:
+                    temp_val = 0
+    for j in range(cols):
+        temp_val = 0
+        for i in range(rows):
+            if temp_val != bin_mat[i,j]:
                 matrix_edge[i,j] = 1
                 if temp_val == 0:
                     temp_val = 1
                 else:
                     temp_val = 0
     return matrix_edge
-                
-matrix_edge = edge_definer(simple_matrix_y)
 
-                
-#    #if 0 is links and 1 is rechts, edge :
-#    for i in range(400):
-#        for j in range(400):
-#            
+
+
+def edge_finder(im):
+    bin_mat1 = filter_color(im,180,253,100,150,130,140,resize_factor)  #orange pole and chairs
+    bin_mat2 = filter_color(im,70,120,150,160,100,120,resize_factor)   #Blue chair
+ 
+    bin_mat3 = filter_color(im,100,200,70,90,160,240,resize_factor) # White flag
+
+    bin_mat_tot = bin_mat1+bin_mat2+bin_mat3   
+    matrix_edge = edge_definer(bin_mat_tot)
+    
+    plt.figure()
+    plt.imshow(matrix_edge)
+    plt.title('Edges only')     
+    return matrix_edge
+
+#image_name = 'images/image1.jpeg'
+#im = cv2.imread(image_name);
+#im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
+
+#im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
+#plt.figure()
+#plt.imshow(im_rgb)
+#plt.title('Resized image')
+#
+#edge_finder(im)
+#
+#
+#
+#im = cv2.GaussianBlur(im,(3,3),0)
+#im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
+#plt.figure()
+#plt.imshow(im_rgb)
+#plt.title('With blur')
+#
+#edge_finder(im)
+#
+#
+
+
+            
     
     
-#def update_simple_u(matrix_yuv,threshold_red,simple_matrix_y):
-#    global simple_matrix_y    
-#    for i in range(2):
-#        for j in range(2):
-#            if (matrix_yuv[i,j])[0] >= threshold_red:
-#                simple_matrix_y[i,j] = 1
-#                print(simple_matrix_y)
-#                return(simple_matrix_y)                
-#
-#def update_simple_v(matrix_yuv,threshold_red,simple_matrix_y):
-#    global simple_matrix_y
-#    for i in range(2):
-#        for j in range(2):
-#            if (matrix[i,j])[0] >= threshold_red:
-#                simple_matrix_y[i,j] = 1
-#                print(simple_matrix_y)
-#                return(simple_matrix_y)                
-#
+
 
 
 
