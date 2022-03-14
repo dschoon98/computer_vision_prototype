@@ -32,7 +32,7 @@ Matrix_test3 = np.matrix([
 ###################### 
 #Image processing
 
-resize_factor = 20
+resize_factor = 10
 image_name = 'images/image1.jpeg'
 im = cv2.imread(image_name);
 im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
@@ -62,7 +62,8 @@ hit=0
 
 def scanning(i_start, i_end, j_start,j_end, bin_mat):
     global k
-    global object_matrix
+    global object_matrixMatrix_test3 = matrix_edge
+
     global hit
     stopvar=0
     
