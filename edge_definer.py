@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import time
 resize_factor = 10
 
 
@@ -42,10 +43,11 @@ def edge_definer(bin_mat):
 
 
 def edge_finder(im):
-    bin_mat1 = filter_color(im,180,253,100,150,130,140,resize_factor)
-    bin_mat2 = filter_color(im,70,120,150,160,100,120,resize_factor)
-    bin_mat3 = filter_color(im,100,200,70,90,160,240,resize_factor)
-    
+    bin_mat1 = filter_color(im,180,253,100,150,130,140,resize_factor)  #orange pole and chairs
+    bin_mat2 = filter_color(im,70,120,150,160,100,120,resize_factor)   #Blue chair
+ 
+    bin_mat3 = filter_color(im,100,200,70,90,160,240,resize_factor) # White flag
+
     bin_mat_tot = bin_mat1+bin_mat2+bin_mat3   
     matrix_edge = edge_definer(bin_mat_tot)
     
