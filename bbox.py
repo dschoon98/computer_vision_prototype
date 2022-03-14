@@ -46,7 +46,7 @@ matrix_edge = edge.edge_finder(im)
 
 ####################
 
-Matrix_test3 = matrix_edge
+Matrix_test3 = matrix_edge  #Now the matrix is copied like 4 times, this should change! 
 
 object_amount =100
 
