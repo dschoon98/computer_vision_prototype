@@ -5,7 +5,7 @@ import pandas as pd
 #matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from PIL import Image
-
+import cv2
 
 
 # I expect a "box", which is just a matrix and a "kernel" which will define edge size
@@ -32,12 +32,10 @@ def edge_box(box, kern , black_white = 1):
     x = np.arange(0, dim[0]);  # I'm going to be adding the kern so...
     y = np.arange(0, dim[1]);  # I'm going to be adding the kern so...
 
-
-
 # turns to grayscale image using different techniques (true grayscale, p
     # ick one color) :
     if black_white == 1 :
-        black_box = black_and_white(box) ;  # may be more efficient just to chose 1 color gradient
+        black_box = cv2.cvtColor(box, cv2.COLOR_BGR2GRAY)  # may be more efficient just to chose 1 color gradient
     elif black_white == 2 :
         black_box = [[img[v][i][0] for i in y] for v in x] ;
     elif black_white == 3 :
@@ -49,10 +47,10 @@ def edge_box(box, kern , black_white = 1):
     dim = np.shape(box)
     x = np.arange(0, dim[0] - kern, 1); # I'm going to be adding the kern so...
     y = np.arange(0, dim[1] - kern, 1); # I'm going to be adding the kern so...
-    black_df = pd.DataFrame(black_box)
+    black_df = np.matrix(black_box)
 
-    di = [[np.max(black_df.iloc[v:v+kern , i:i+kern]) for i in y] for v in x]; #dilates ( some problem, convert to dataframe)
-    ero = [[np.min(black_df.iloc[v:v+ kern ,i:i + kern]) for i in y] for v in x]; # erodes (same deal)
+    di = [[np.max(black_df[v:v+kern , i:i+kern]) for i in y] for v in x]; #dilates ( some problem, convert to dataframe)
+    ero = [[np.min(black_df[v:v+ kern ,i:i + kern]) for i in y] for v in x]; # erodes (same deal)
 
     lines = di - ero ;
     lines = lines.values.tolist();
