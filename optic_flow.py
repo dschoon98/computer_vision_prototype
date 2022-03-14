@@ -27,10 +27,12 @@ def read_image_folder(image_dir_name,image_type):
 
 
 def lukas_kanade(old_index,new_index,image_names,graphics):
-    
+    resize_factor = 5
     ## parameters - keep them like this:
     old_bgr = cv.imread(image_names[old_index])
     new_bgr = cv.imread(image_names[new_index])
+    old_bgr = cv.resize(old_bgr, (int(old_bgr.shape[1]/resize_factor), int(old_bgr.shape[0]/resize_factor)));
+    new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
     # params for ShiTomasi corner detection
     feature_params = dict( maxCorners = 10,
@@ -72,7 +74,7 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
             tup_old = tuple(map(int,tuple(good_old[p,:])))
             tup_new = tuple(map(int,tuple(good_new[p,:])))
 
-            cv.arrowedLine(ima, tup_old, tup_new, color,thickness=8);
+            cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.5);
         
         cv.imshow('image',ima)
         cv.waitKey(0)
@@ -230,5 +232,5 @@ def determine_optical_flow(image_names,graphics):
         plt.ylabel('Time-to-contact')
 
 # Main script
-image_names = read_image_folder('images/optic_flow','jpeg')
+image_names = read_image_folder('images/opticflow/','jpeg')
 determine_optical_flow(image_names,graphics=True)
