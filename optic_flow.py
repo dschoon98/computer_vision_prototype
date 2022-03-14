@@ -27,7 +27,7 @@ def read_image_folder(image_dir_name,image_type):
 
 
 def lukas_kanade(old_index,new_index,image_names,graphics):
-    resize_factor = 5
+    resize_factor = 3
     ## parameters - keep them like this:
     old_bgr = cv.imread(image_names[old_index])
     new_bgr = cv.imread(image_names[new_index])
@@ -35,10 +35,10 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
     # params for ShiTomasi corner detection
-    feature_params = dict( maxCorners = 10,
-                           qualityLevel = 0.3,
-                           minDistance = 7,
-                           blockSize = 7 )
+    feature_params = dict( maxCorners = 100,
+                           qualityLevel = 0.1,
+                           minDistance = 20,
+                           blockSize = 20 )
     
     # Parameters for lucas kanade optical flow
     lk_params = dict( winSize  = (15, 15),
@@ -80,8 +80,6 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    print(good_old)
-    print(good_new)
     return good_old, good_new, flow_vectors
     
 #    old_gray = frame_gray.copy()
