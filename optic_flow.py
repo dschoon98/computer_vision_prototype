@@ -35,7 +35,7 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
     # params for ShiTomasi corner detection
-    feature_params = dict( maxCorners = 100,
+    feature_params = dict( maxCorners = 40,
                            qualityLevel = 0.1,
                            minDistance = 20,
                            blockSize = 20 )
