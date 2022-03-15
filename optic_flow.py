@@ -3,6 +3,7 @@ import cv2 as cv
 import os
 import matplotlib.pyplot as plt
 import re
+#np.random.seed(328779)
 # these functions are to get a nice directory listing
 def get_number_file_name(name):
     inds1 = [m.start() for m in re.finditer('_', name)]
@@ -27,7 +28,7 @@ def read_image_folder(image_dir_name,image_type):
 
 
 def lukas_kanade(old_index,new_index,image_names,graphics):
-    resize_factor = 3
+    resize_factor = 2
     ## parameters - keep them like this:
     old_bgr = cv.imread(image_names[old_index])
     new_bgr = cv.imread(image_names[new_index])
@@ -48,19 +49,19 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     # Take first frame and find corners in it
     old_gray = cv.cvtColor(old_bgr, cv.COLOR_BGR2GRAY)
     p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
-    
 
     new_gray = cv.cvtColor(new_bgr, cv.COLOR_BGR2GRAY)
     
     # calculate optical flow
     p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, new_gray, p0, None, **lk_params)
-    
+
     #cv2.imshow('Flow', im);
     #cv2.waitKey(100);
     #cv2.destroyAllWindows()
     # Select good points
     good_new = p1[st==1]
     good_old = p0[st==1]
+
     
     flow_vectors = good_new - good_old
     
@@ -121,6 +122,7 @@ def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_si
         pv[it, :] = np.dot(pseudo_inverse_AA, v_vector_small);
         errs = np.abs(np.dot(A, pv[it,:]) - v_vector);
         errs[errs > error_threshold] = error_threshold;
+
         errors[it, 1] = np.mean(errs);
     
     # take the minimal error
@@ -136,16 +138,16 @@ def determine_optical_flow(image_names,graphics):
 # iterate over the images:
     old_index = 0
     n_images = len(image_names);
-    FoE_over_time = np.zeros([n_images, 2]);
-    horizontal_motion_over_time = np.zeros([n_images, 1]);
-    vertical_motion_over_time = np.zeros([n_images, 1]);
-    divergence_over_time = np.zeros([n_images, 1]);
-    errors_over_time = np.zeros([n_images, 1]);
-#    elapsed_times = np.zeros([n_images,1]);
-    ttc_over_time = np.zeros([n_images,1]);
-    FoE = np.asarray([0.0]*2);
-    time_to_contact = 0.0;
-    for im in range(n_images):
+#    FoE_over_time = np.zeros([n_images, 2]);
+#    horizontal_motion_over_time = np.zeros([n_images, 1]);
+#    vertical_motion_over_time = np.zeros([n_images, 1]);
+#    divergence_over_time = np.zeros([n_images, 1]);
+#    errors_over_time = np.zeros([n_images, 1]);
+##    elapsed_times = np.zeros([n_images,1]);
+#    ttc_over_time = np.zeros([n_images,1]);
+#    FoE = np.asarray([0.0]*2);
+#    time_to_contact = 0.0;
+    for im in range(n_images): #n_images
         
         if im>0:
             
@@ -162,89 +164,105 @@ def determine_optical_flow(image_names,graphics):
             # convert the pixels to a frame where the coordinate in the center is (0,0)
             good_old -= 128.0;
             good_new -= 128.0;
-            indexes = np.random.rand(1,3,dtype=int)
-            print(indexes)
-            u_vector = np.array([ [flow_vectors[indexes[0]]],
-                                  [flow_vectors[indexes[1]]],
-                                  [flow_vectors[indexes[2]] ]])
-            x_small = np.array([[good_old[indexes[0]]],
-                                [],
-                                []])
-            # extract the parameters of the flow field:
             pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
+#            print(pu.reshape([3,1]))
+#            print(np.array([[good_old[0][0],good_old[0][1],1]]))
+
+            x = good_old[:,[0]]
+            y = good_old[:,[1]]
+            mat_mul = np.concatenate((x,y,np.ones([x.shape[0],1])),axis=1)
             
-            # ***********************************
-            # EXERCISE:
-            # change the following lines of code!
-            # ***********************************
-            horizontal_motion = -pu[2];
-            vertical_motion = -pv[2];
-            divergence = (pu[0] + pv[1]) / 2.0;
-            small_threshold = 1E-5;
-            if(abs(pu[0]) > small_threshold):
-                FoE[0] = pu[2] / pu[0]; 
-            if(abs(pv[1]) > small_threshold):
-                FoE[1] = pv[2] / pv[1];    
-            if(abs(divergence) > small_threshold):
-                time_to_contact = 1 / divergence;
-    
-            # book keeping:
-            horizontal_motion_over_time[im] = horizontal_motion;
-            vertical_motion_over_time[im] = vertical_motion;
-            FoE_over_time[im, 0] = FoE[0];
-            FoE_over_time[im, 1] = FoE[1];
-            divergence_over_time[im] = divergence;
-            errors_over_time[im] = err;
-            ttc_over_time[im] = time_to_contact;
+
+            u = np.matmul(mat_mul,pu.reshape([3,1]))
+            v = np.matmul(mat_mul,pv.reshape([3,1]))
+            A_matrix = np.array([      [u[0][0],0,0,1,0,-x[0][0]],
+                                        [v[0][0],0,0,0,1,-y[0][0]],
+                                        [0,u[1][0],0,1,0,-x[1][0]],
+                                        [0,v[1][0],0,0,1,-y[1][0]],
+                                        [0,0,u[2][0],1,0,-x[2][0]],
+                                        [0,0,v[2][0],0,1,-y[2][0]]      ])
+            solution = np.linalg.solve(A_matrix,np.array([[1]]))      
+        old_index += 1
+
+            # Solve Ax = b with A being the matrix with 6 equations u1 = ... ,  \n
+            # v1 = ..., (...), v3 = ... \
+            # b = zeros(6,1), I tried this 
+            
+            
+            # extract the parameters of the flow field:
+
+            
+#            # ***********************************
+#            # EXERCISE:
+#            # change the following lines of code!
+#            # ***********************************
+#            horizontal_motion = -pu[2];
+#            vertical_motion = -pv[2];
+#            divergence = (pu[0] + pv[1]) / 2.0;
+#            small_threshold = 1E-5;
+#            if(abs(pu[0]) > small_threshold):
+#                FoE[0] = pu[2] / pu[0]; 
+#            if(abs(pv[1]) > small_threshold):
+#                FoE[1] = pv[2] / pv[1];    
+#            if(abs(divergence) > small_threshold):
+#                time_to_contact = 1 / divergence;
+#    
+#            # book keeping:
+#            horizontal_motion_over_time[im] = horizontal_motion;
+#            vertical_motion_over_time[im] = vertical_motion;
+#            FoE_over_time[im, 0] = FoE[0];
+#            FoE_over_time[im, 1] = FoE[1];
+#            divergence_over_time[im] = divergence;
+#            errors_over_time[im] = err;
+#            ttc_over_time[im] = time_to_contact;
     
             # print the FoE and divergence:
-            print('error = {}, FoE = {}, {}, and divergence = {}'.format(err, FoE[0], FoE[1], divergence));
+#            print('error = {}, FoE = {}, {}, and divergence = {}'.format(err, FoE[0], FoE[1], divergence));
             
     
             # the current image becomes the previous image:
-        old_index += 1
 
     # ********************************************************************
     # TODO:
     # What is the unit of the divergence?
     # Can you also draw the time-to-contact over time? In what unit is it?
     # ********************************************************************
-    if graphics:
-        
-        plt.figure();
-        plt.plot(range(n_images), divergence_over_time, label='Divergence');
-        plt.xlabel('Image')
-        plt.ylabel('Divergence')
-    
-        plt.figure();
-        plt.plot(range(n_images), FoE_over_time[:,0], label='FoE[0]');
-        plt.plot(range(n_images), FoE_over_time[:,1], label='FoE[1]');
-        plt.plot(range(n_images), np.asarray([0.0]*n_images), label='Center of the image')
-        plt.legend();
-        plt.xlabel('Image')
-        plt.ylabel('FoE')
-    
-        plt.figure();
-        plt.plot(range(n_images), errors_over_time, label='Error');
-        plt.xlabel('Image')
-        plt.ylabel('Error')
-    
-        plt.figure();
-        plt.plot(range(n_images), horizontal_motion_over_time, label='Horizontal motion');
-        plt.plot(range(n_images), vertical_motion_over_time, label='Vertical motion');
-        plt.legend();
-        plt.xlabel('Image')
-        plt.ylabel('Motion U/Z, V/Z')       
-    
-        plt.figure();
-        plt.plot(range(n_images), ttc_over_time, label='Time-to-contact');
-        plt.xlabel('Image')
-        plt.ylabel('Time-to-contact')
+#    if graphics:
+#        
+#        plt.figure();
+#        plt.plot(range(n_images), divergence_over_time, label='Divergence');
+#        plt.xlabel('Image')
+#        plt.ylabel('Divergence')
+#    
+#        plt.figure();
+#        plt.plot(range(n_images), FoE_over_time[:,0], label='FoE[0]');
+#        plt.plot(range(n_images), FoE_over_time[:,1], label='FoE[1]');
+#        plt.plot(range(n_images), np.asarray([0.0]*n_images), label='Center of the image')
+#        plt.legend();
+#        plt.xlabel('Image')
+#        plt.ylabel('FoE')
+#    
+#        plt.figure();
+#        plt.plot(range(n_images), errors_over_time, label='Error');
+#        plt.xlabel('Image')
+#        plt.ylabel('Error')
+#    
+#        plt.figure();
+#        plt.plot(range(n_images), horizontal_motion_over_time, label='Horizontal motion');
+#        plt.plot(range(n_images), vertical_motion_over_time, label='Vertical motion');
+#        plt.legend();
+#        plt.xlabel('Image')
+#        plt.ylabel('Motion U/Z, V/Z')       
+#    
+#        plt.figure();
+#        plt.plot(range(n_images), ttc_over_time, label='Time-to-contact');
+#        plt.xlabel('Image')
+#        plt.ylabel('Time-to-contact')
 
-    return flow_vectors, good_old, good_new
+    return flow_vectors, good_old, good_new, solution
 
 # Main script
 image_names = read_image_folder('images/opticflow/','jpeg')
-flow_vectors,good_old,good_new = determine_optical_flow(image_names,graphics=False)
+flow_vectors,good_old,good_new,solution = determine_optical_flow(image_names,graphics=False)
 
 
