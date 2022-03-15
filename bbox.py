@@ -166,11 +166,11 @@ def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
             break
         if Matrix_edges[int(i), int(j-1)] == 1:
             j-=1
-        elif Matrix_edges[int(i-1), int(j-1)] == 1:
-            i-=1
+        elif Matrix_edges[int(i+1), int(j-1)] == 1:
+            i+=1
             j-=1
-        elif Matrix_edges[int(i-1), int(j)] == 1:
-            i-=1
+        elif Matrix_edges[int(i+1), int(j)] == 1:
+            i+=1
         else:
             break
     object_matrix[k,4]=i
