@@ -34,11 +34,11 @@ start_time = time.time()
 ###################### 
 #Image processing
 
-resize_factor = 10
-image_name = 'images/image1.jpeg'
+resize_factor = 7
+image_name = 'bebop_images/cz_poles/cz/image_pole.jpg'
 im = cv2.imread(image_name);
 im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
-im = cv2.GaussianBlur(im,(5,5),0)
+im = cv2.GaussianBlur(im,(3,3),0)
 im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
 plt.figure()
 plt.imshow(im_rgb)
@@ -61,7 +61,7 @@ cols = bin_mat.shape[1]
 k=0
 going_left=1
 hit=0
-        
+
 def x_ray(bin_mat):
     global object_matrix
     global hit
