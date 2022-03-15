@@ -62,25 +62,25 @@ Matrix_testje = np.matrix([
 ###################### 
 #Image processing
 
-#resize_factor = 10
-#image_name = 'images/image1.jpeg'
-#im = cv2.imread(image_name);
-#im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
-#im = cv2.GaussianBlur(im,(5,5),0)
-#im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
-#plt.figure()
-#plt.imshow(im_rgb)
-#plt.title('Resized image with blur')
+resize_factor = 10
+image_name = 'images/image1.jpeg'
+im = cv2.imread(image_name);
+plt.figure()
+plt.imshow(im)
+im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
+im = cv2.GaussianBlur(im,(5,5),0)
+im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
+plt.figure()
+plt.imshow(im_rgb)
+plt.title('Resized image with blur')
 
 
-
-#bin_mat = edge.edge_finder(im)
-bin_mat = Matrix_testje
+bin_mat = edge.edge_finder(im)
 
 ####################
 
 
-object_amount = 5
+object_amount = 30
 
 object_matrix = np.zeros([object_amount, 8])
 switch_var = 1
