@@ -62,8 +62,8 @@ Matrix_testje = np.matrix([
 ###################### 
 #Image processing
 
-resize_factor = 7
-image_name = 'bebop_images/cz_poles/cz/image_pole.jpg'
+resize_factor = 20
+image_name = 'images/image1.jpeg'
 im = cv2.imread(image_name);
 plt.figure()
 plt.imshow(im)
@@ -80,7 +80,7 @@ bin_mat = edge.edge_finder(im)
 ####################
 
 
-object_amount = 30
+object_amount = 100
 
 object_matrix = np.zeros([object_amount, 8])
 switch_var = 1
@@ -166,11 +166,11 @@ def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
             break
         if Matrix_edges[int(i), int(j-1)] == 1:
             j-=1
-        elif Matrix_edges[int(i-1), int(j-1)] == 1:
-            i-=1
+        elif Matrix_edges[int(i+1), int(j-1)] == 1:
+            i+=1
             j-=1
-        elif Matrix_edges[int(i-1), int(j)] == 1:
-            i-=1
+        elif Matrix_edges[int(i+1), int(j)] == 1:
+            i+=1
         else:
             break
     object_matrix[k,4]=i
