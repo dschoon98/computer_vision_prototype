@@ -49,11 +49,12 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     old_gray = cv.cvtColor(old_bgr, cv.COLOR_BGR2GRAY)
     p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
     
+
     new_gray = cv.cvtColor(new_bgr, cv.COLOR_BGR2GRAY)
     
     # calculate optical flow
     p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, new_gray, p0, None, **lk_params)
-
+    
     #cv2.imshow('Flow', im);
     #cv2.waitKey(100);
     #cv2.destroyAllWindows()
@@ -229,6 +230,11 @@ def determine_optical_flow(image_names,graphics):
         plt.xlabel('Image')
         plt.ylabel('Time-to-contact')
 
+
+def rotations(A,B,C):
+    
 # Main script
 image_names = read_image_folder('images/opticflow/','jpeg')
 determine_optical_flow(image_names,graphics=True)
+
+

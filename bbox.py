@@ -6,6 +6,7 @@ import time
 
 start_time = time.time()
 
+
 #Matrix_test3 = np.matrix([
 #    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 #    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -72,7 +73,7 @@ def x_ray(bin_mat):
     global k
     stopvar=0
     running=1
-
+    
     while running:
         stopvar=0
         for i in range(int(i_start), int(i_end)):
@@ -81,16 +82,11 @@ def x_ray(bin_mat):
                 for K in range(k):
                     if i>=object_matrix[K,0]-1 and i<=object_matrix[K,6]+1 and j>=object_matrix[K,5]-1 and j<=object_matrix[K,3]+1:
                         for z in range(int((object_matrix[K,3]-object_matrix[K,5])+3)):
-                            end_time = time.time()
-
-                            print(end_time-start_time)
                             next(xr)
 
                             # StopIteration happens sometimes. To solve: Add extra stopping condition
                             
                             # Once it finds object, break out of K loop
-            
-                
                 if bin_mat[int(i),int(j)]==1:
                     object_matrix[k,0]=i
                     object_matrix[k,1]=j
@@ -179,3 +175,6 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right):
 
 
 x_ray(bin_mat)
+
+end_time = time.time()
+print(end_time-start_time)
