@@ -162,7 +162,14 @@ def determine_optical_flow(image_names,graphics):
             # convert the pixels to a frame where the coordinate in the center is (0,0)
             good_old -= 128.0;
             good_new -= 128.0;
-#            u_small = flow_vectors[]
+            indexes = np.random.rand(1,3,dtype=int)
+            print(indexes)
+            u_vector = np.array([ [flow_vectors[indexes[0]]],
+                                  [flow_vectors[indexes[1]]],
+                                  [flow_vectors[indexes[2]] ]])
+            x_small = np.array([[good_old[indexes[0]]],
+                                [],
+                                []])
             # extract the parameters of the flow field:
             pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
             
