@@ -60,30 +60,6 @@ cols = bin_mat.shape[1]
 k=0
 going_left=1
 hit=0
-
-def scanning(i_start, i_end, j_start,j_end, bin_mat):
-    global k
-    global object_matrix
-
-    global hit
-    stopvar=0
-    
-    for i in range(int(i_start), int(i_end)):
-        for j in range(int(j_start), int(j_end)):
-            if bin_mat[i,j] == 1:
-                object_matrix[k, 0] =i
-                object_matrix[k, 1] =j
-                stopvar=1
-                hit=1
-                break
-        if not stopvar:
-            hit=0
-        if stopvar:
-            right_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
-            left_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
-            lower_maxima_finder(bin_mat, object_matrix[k,2], object_matrix[k,3])
-            break
-            
         
 def x_ray(bin_mat):
     global object_matrix
