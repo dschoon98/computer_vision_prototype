@@ -116,6 +116,7 @@ def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_si
         errors[it, 0] = np.mean(errs);
         # vertical flow:
         v_vector_small = flow_vectors[inds, 0];
+        
         # pv[it, :] = np.linalg.solve(AA, VV);
         pv[it, :] = np.dot(pseudo_inverse_AA, v_vector_small);
         errs = np.abs(np.dot(A, pv[it,:]) - v_vector);
@@ -151,14 +152,24 @@ def determine_optical_flow(image_names,graphics):
     #       t_before = time.time()
             # determine optical flow:
             good_old, good_new, flow_vectors = lukas_kanade(old_index-1,old_index,image_names,graphics) # Right now image indexes are simply 0,1, needs to loop over images depending on output of drone camera
+            
     #            elapsed = time.time() - t_before;
     #            if(verbose):
     #                print('Elapsed time = {}'.format(elapsed));
     #            elapsed_times[im] = elapsed;
-    #    
+    #       
+            
             # convert the pixels to a frame where the coordinate in the center is (0,0)
             good_old -= 128.0;
-    
+            good_new -= 128.0;
+            indexes = np.random.rand(1,3,dtype=int)
+            print(indexes)
+            u_vector = np.array([ [flow_vectors[indexes[0]]],
+                                  [flow_vectors[indexes[1]]],
+                                  [flow_vectors[indexes[2]] ]])
+            x_small = np.array([[good_old[indexes[0]]],
+                                [],
+                                []])
             # extract the parameters of the flow field:
             pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
             
@@ -230,11 +241,10 @@ def determine_optical_flow(image_names,graphics):
         plt.xlabel('Image')
         plt.ylabel('Time-to-contact')
 
+    return flow_vectors, good_old, good_new
 
-def rotations(A,B,C):
-    
 # Main script
 image_names = read_image_folder('images/opticflow/','jpeg')
-determine_optical_flow(image_names,graphics=True)
+flow_vectors,good_old,good_new = determine_optical_flow(image_names,graphics=False)
 
 
