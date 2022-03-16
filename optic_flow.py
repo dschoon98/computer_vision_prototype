@@ -4,28 +4,16 @@ import os
 import matplotlib.pyplot as plt
 import re
 #np.random.seed(328779)
-# these functions are to get a nice directory listing
-def get_number_file_name(name):
-    inds1 = [m.start() for m in re.finditer('_', name)]
-    if(inds1 == []):
-        return 0;
-    ind1 = inds1[-1];
-    inds2 = [m.start() for m in re.finditer('\.', name)]
-    if(inds2 == []):
-        return 0;
-    ind2 = inds2[-1];
-    number = name[ind1+1:ind2];
-    return int(number);
 
-def read_image_folder(image_dir_name,image_type):
-    # get the image names from the directory:
-    image_names = [];
-    for file in os.listdir(image_dir_name):
-        if file.endswith(image_type):
-            image_names.append(image_dir_name + file);
-        image_names.sort(key=get_number_file_name)
-    return image_names
+def load_images_from_folder(folder):
+    images = []
+    for filename in sorted(os.listdir(folder)):
+        img = cv.imread(os.path.join(folder,filename))
+        if img is not None:
+            img = cv.rotate(img,cv.ROTATE_90_COUNTERCLOCKWISE)
 
+            images.append(img)
+    return images
 
 def lukas_kanade(old_bgr,new_bgr,graphics):
     ## parameters - keep them like this:
@@ -57,229 +45,83 @@ def lukas_kanade(old_bgr,new_bgr,graphics):
     good_new = p1[st==1]
     good_old = p0[st==1]
 
-    
     flow_vectors = good_new - good_old
     
 
 
     return good_old, good_new, flow_vectors
-    
-#    old_gray = frame_gray.copy()
-#    p0 = good_new.reshape(-1, 1, 2)
-#    plt.figure()
-#    plt.imshow(old_frame)
 
-# Create a mask image for drawing purposes
-#mask = np.zeros_like(old_frame)
-#def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_size):
-#    
-#    n_points = good_old.shape[0];
-#     # This is a RANSAC method to better deal with outliers
-#    # matrices and vectors for the big system:
-#    A = np.concatenate((good_old, np.ones([good_old.shape[0], 1])), axis=1);
-#    u_vector = flow_vectors[:,0];
-#    v_vector = flow_vectors[:,1];
-#    
-#    # solve many small systems, calculating the errors:
-#    errors = np.zeros([n_iterations, 2]);
-#    pu = np.zeros([n_iterations, 3])
-#    pv = np.zeros([n_iterations, 3])
-#    for it in range(n_iterations):
-#        inds = np.random.choice(range(n_points), size=sample_size, replace=False);
-#        AA = np.concatenate((good_old[inds,:], np.ones([sample_size, 1])), axis=1);
-#        x = good_old[inds,0].reshape([1,3])[0]
-#        y = good_old[inds,1].reshape([1,3])[0]
-#        
-#        A_rot = 0.1 # rad/s or deg/s?
-#        B_rot = 0.1
-#        C_rot = 0.1
-#        pseudo_inverse_AA = np.linalg.pinv(AA);
-#        
-#        # horizontal flow:
-#        u_vector_small = flow_vectors[inds, 0];
-#
-#        # derotate horizontal flow
-#        u_vector_small = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([1,x.shape[0]]) - C_rot*y
-#        u_vector_small = u_vector_small[0]
-#
-#        #pu[it, :] = np.linalg.solve(AA, UU);
-#        pu[it,:] = np.dot(pseudo_inverse_AA, u_vector_small);
-#        errs = np.abs(np.dot(A, pu[it,:]) - u_vector);
-#        errs[errs > error_threshold] = error_threshold;
-#        errors[it, 0] = np.mean(errs);
-#        
-#        # vertical flow:
-#        v_vector_small = flow_vectors[inds, 1];
-#        # derotate vertical flow0[;.]
-#        v_vector_small = v_vector_small + C_rot*x - A_rot*np.ones([1,y.shape[0]]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
-#        v_vector_small = v_vector_small[0]
-#
-#        
-#        # pv[it, :] = np.linalg.solve(AA, VV);
-#        pv[it, :] = np.dot(pseudo_inverse_AA, v_vector_small);
-#        errs = np.abs(np.dot(A, pv[it,:]) - v_vector);
-#        errs[errs > error_threshold] = error_threshold;
-#
-#        errors[it, 1] = np.mean(errs);
-#    
-#    # take the minimal error
-#    errors = np.mean(errors, axis=1);
-#    ind = np.argmin(errors);
-#    err = errors[ind];
-#    pu = pu[ind, :];
-#    pv = pv[ind, :];
-#
-#    return pu, pv, err
+def determine_optical_flow(images,graphics):
+    resize_factor = 0.6
 
-def determine_optical_flow(image_names,graphics):
-    resize_factor = 2
-# iterate over the images:
     old_index = 0
-    n_images = len(image_names);
-#    FoE_over_time = np.zeros([n_images, 2]);
-#    horizontal_motion_over_time = np.zeros([n_images, 1]);
-#    vertical_motion_over_time = np.zeros([n_images, 1]);
-#    divergence_over_time = np.zeros([n_images, 1]);
-#    errors_over_time = np.zeros([n_images, 1]);
-##    elapsed_times = np.zeros([n_images,1]);
-#    ttc_over_time = np.zeros([n_images,1]);
-#    FoE = np.asarray([0.0]*2);
-#    time_to_contact = 0.0;
+    n_images = len(images);
+
     for im in range(n_images): #n_images
         new_index = old_index + 1
 
         if im>0:
-            old_bgr = cv.imread(image_names[old_index])
-            new_bgr = cv.imread(image_names[new_index])
+            old_bgr = images[old_index]
+            new_bgr = images[new_index]
             old_bgr = cv.resize(old_bgr, (int(old_bgr.shape[1]/resize_factor), int(old_bgr.shape[0]/resize_factor)));
             new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
-
             # determine optical flow:
-            good_old, good_new, flow_vectors = lukas_kanade(old_bgr,new_bgr,graphics) # Right now image indexes are simply 0,1, needs to loop over images depending on output of drone camera
+            good_old, good_new, flow_vectors = lukas_kanade(old_bgr,new_bgr,graphics) 
 
             # convert the pixels to a frame where the coordinate in the center is (0,0)
             good_old -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
             good_new -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
-            
-#            # Ransac
-#            pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
 
             x = good_old[:,[0]]
             y = good_old[:,[1]]
-            mat_mul = np.concatenate((x,y,np.ones([x.shape[0],1])),axis=1)
             
-#            u = np.matmul(mat_mul,pu.reshape([3,1]))
-#            v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
+            # Rotational and Translational rates
+            A_rot = 0.1  # Unit?
+            B_rot = 0.1
+            C_rot = 0.1
+            U = 1     
+            V = 1
+            W = 1
+            
             u = flow_vectors[:,[0]]
             v = flow_vectors[:,[1]]
-            u = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([1,x.shape[0]]) - C_rot*y
+            u = u - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([x.shape[0],1]) - C_rot*y
+            v = v + C_rot*x - A_rot*np.ones([y.shape[0],1]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
             
-            A_matrix = np.array([       [1,0,-x[0][0],0],
-                                        [0,1,-y[0][0],0],
-                                        [1,0,-x[1][0],u[1][0]],
-                                        [0,1,-y[1][0],u[1][0]] ])
+            Z_horizontal = np.divide(x*W,u) - np.divide(U*np.ones([x.shape[0],1]),u)  # Z = (x*W-U)/u 
+            Z_vertical = np.divide(y*W,v) - np.divide(V*np.ones([x.shape[0],1]),v)  # Z = (y*W-V)/v 
+            Z = np.abs(np.divide(Z_horizontal + Z_vertical,2*np.ones([x.shape[0],1])))  # Z = (Z_hor + Z_vert)/2
             
-            b_vector = np.array([[u[0][0]],
-                                 [v[0][0]],
-                                 [0],
-                                 [0]])
-            solution = np.linalg.solve(A_matrix,b_vector)  # Ax = b with x = [U,V,W,Z_2]^T SEE NOTES
             old_index += 1
             
             if graphics:
-                # Move to old coordinate center again 
+                
+                # Move to old coordinate center again, merely for drawing purposes
                 good_old += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
                 good_new += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
-            
+                
+                # The image you see is the average of the previous and current image
                 ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
+
                 n_points = good_old.shape[0];
-        
                 color = (0,255,0);
                 for p in range(n_points):
                     tup_old = tuple(map(int,tuple(good_old[p,:])))
                     tup_new = tuple(map(int,tuple(good_new[p,:])))
-        
-                    cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.5);
-                
+                    font = cv.FONT_HERSHEY_SIMPLEX
+                    FontScale=0.6
+                    thickness = 1
+                    cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.5);  #Put flow vectors in image
+                    cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
                 cv.imshow('image',ima)
-                cv.waitKey(0)
-                cv.destroyAllWindows()
-            
-            # extract the parameters of the flow field:
+                cv.waitKey(32)    # Value = How many ms each frame stays open
 
-            
-#            # ***********************************
-#            # EXERCISE:
-#            # change the following lines of code!
-#            # ***********************************
-#            horizontal_motion = -pu[2];
-#            vertical_motion = -pv[2];
-#            divergence = (pu[0] + pv[1]) / 2.0;
-#            small_threshold = 1E-5;
-#            if(abs(pu[0]) > small_threshold):
-#                FoE[0] = pu[2] / pu[0]; 
-#            if(abs(pv[1]) > small_threshold):
-#                FoE[1] = pv[2] / pv[1];    
-#            if(abs(divergence) > small_threshold):
-#                time_to_contact = 1 / divergence;
-#    
-#            # book keeping:
-#            horizontal_motion_over_time[im] = horizontal_motion;
-#            vertical_motion_over_time[im] = vertical_motion;
-#            FoE_over_time[im, 0] = FoE[0];
-#            FoE_over_time[im, 1] = FoE[1];
-#            divergence_over_time[im] = divergence;
-#            errors_over_time[im] = err;
-#            ttc_over_time[im] = time_to_contact;
-    
-            # print the FoE and divergence:
-#            print('error = {}, FoE = {}, {}, and divergence = {}'.format(err, FoE[0], FoE[1], divergence));
-            
-    
-            # the current image becomes the previous image:
 
-    # ********************************************************************
-    # TODO:
-    # What is the unit of the divergence?
-    # Can you also draw the time-to-contact over time? In what unit is it?
-    # ********************************************************************
-#    if graphics:
-#        
-#        plt.figure();
-#        plt.plot(range(n_images), divergence_over_time, label='Divergence');
-#        plt.xlabel('Image')
-#        plt.ylabel('Divergence')
-#    
-#        plt.figure();
-#        plt.plot(range(n_images), FoE_over_time[:,0], label='FoE[0]');
-#        plt.plot(range(n_images), FoE_over_time[:,1], label='FoE[1]');
-#        plt.plot(range(n_images), np.asarray([0.0]*n_images), label='Center of the image')
-#        plt.legend();
-#        plt.xlabel('Image')
-#        plt.ylabel('FoE')
-#    
-#        plt.figure();
-#        plt.plot(range(n_images), errors_over_time, label='Error');
-#        plt.xlabel('Image')
-#        plt.ylabel('Error')
-#    
-#        plt.figure();
-#        plt.plot(range(n_images), horizontal_motion_over_time, label='Horizontal motion');
-#        plt.plot(range(n_images), vertical_motion_over_time, label='Vertical motion');
-#        plt.legend();
-#        plt.xlabel('Image')
-#        plt.ylabel('Motion U/Z, V/Z')       
-#    
-#        plt.figure();
-#        plt.plot(range(n_images), ttc_over_time, label='Time-to-contact');
-#        plt.xlabel('Image')
-#        plt.ylabel('Time-to-contact')
-
-    return flow_vectors, good_old, good_new, solution
+    return flow_vectors, good_old, good_new
 
 # Main script
-image_names = read_image_folder('bebop_images/cz_poles/cz','jpg')
-flow_vectors,good_old,good_new,solution = determine_optical_flow(image_names,graphics=True)
-
+images = load_images_from_folder('16MarTesting/20220316-145151')
+flow_vectors,good_old,good_new = determine_optical_flow(images,graphics=True)
+cv.destroyAllWindows()
 
