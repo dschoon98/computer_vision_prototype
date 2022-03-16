@@ -36,7 +36,7 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
     # params for ShiTomasi corner detection
-    feature_params = dict( maxCorners = 3,
+    feature_params = dict( maxCorners = 100,
                            qualityLevel = 0.1,
                            minDistance = 20,
                            blockSize = 20 )
@@ -107,16 +107,37 @@ def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_si
     for it in range(n_iterations):
         inds = np.random.choice(range(n_points), size=sample_size, replace=False);
         AA = np.concatenate((good_old[inds,:], np.ones([sample_size, 1])), axis=1);
+        x = good_old[inds,0].reshape([1,3])[0]
+        y = good_old[inds,1].reshape([1,3])[0]
+        
+        print(good_old)
+        print('x =',x)
+        print('y =',y)
+        A_rot = 1 # rad/s or deg/s?
+        B_rot = 1
+        C_rot = 1
         pseudo_inverse_AA = np.linalg.pinv(AA);
+        
         # horizontal flow:
         u_vector_small = flow_vectors[inds, 0];
-        # pu[it, :] = np.linalg.solve(AA, UU);
+        print(u_vector_small,A_rot*np.multiply(x,y),B_rot*np.multiply(x,x))
+        
+        # derotate horizontal flow
+        u_vector_small = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x)# + B_rot*np.ones([x.shape[0],x.shape[1]]) - C_rot*y
+        print('u = ',u_vector_small)
+
+        #pu[it, :] = np.linalg.solve(AA, UU);
         pu[it,:] = np.dot(pseudo_inverse_AA, u_vector_small);
         errs = np.abs(np.dot(A, pu[it,:]) - u_vector);
         errs[errs > error_threshold] = error_threshold;
         errors[it, 0] = np.mean(errs);
         # vertical flow:
-        v_vector_small = flow_vectors[inds, 0];
+        v_vector_small = flow_vectors[inds, 1];
+        print('v = ',v_vector_small)
+        # derotate vertical flow
+        v_vector_small = v_vector_small + C_rot*x - A_rot*np.ones([y.shape[0],y.shape[1]]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
+        print('v = ',v_vector_small)
+
         
         # pv[it, :] = np.linalg.solve(AA, VV);
         pv[it, :] = np.dot(pseudo_inverse_AA, v_vector_small);
@@ -147,7 +168,7 @@ def determine_optical_flow(image_names,graphics):
 #    ttc_over_time = np.zeros([n_images,1]);
 #    FoE = np.asarray([0.0]*2);
 #    time_to_contact = 0.0;
-    for im in range(n_images): #n_images
+    for im in range(2): #n_images
         
         if im>0:
             
@@ -167,18 +188,18 @@ def determine_optical_flow(image_names,graphics):
             pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
 #            print(pu.reshape([3,1]))
 #            print(np.array([[good_old[0][0],good_old[0][1],1]]))
-
+            
             x = good_old[:,[0]]
             y = good_old[:,[1]]
             mat_mul = np.concatenate((x,y,np.ones([x.shape[0],1])),axis=1)
             
 
-#            u = np.matmul(mat_mul,pu.reshape([3,1]))
-#            v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
-            u = flow_vectors[:,[0]]
-            v = flow_vectors[:,[1]]
-            print('u = ',u)
-            print('v = ',v)
+            u = np.matmul(mat_mul,pu.reshape([3,1]))
+            v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
+#            u = flow_vectors[:,[0]]
+#            v = flow_vectors[:,[1]]
+            
+
             A_matrix = np.array([       [1,0,-x[0][0],0],
                                         [0,1,-y[0][0],0],
                                         [1,0,-x[1][0],u[1][0]],
