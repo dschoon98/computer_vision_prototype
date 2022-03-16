@@ -1,8 +1,11 @@
 addpath .
 
 tic
-I = imread('/home/morgoth/computer_vision_prototype/images/flag_and_multi_color.jpeg'); % i dont understand paths
+I = imread('/home/morgoth/computer_vision_prototype/bebop_images/cyberzoo_poles/20190121-135009/85878042.jpg'); % i dont understand paths
 bw = rgb2gray(I);
+% picture was sideways so needed to transpose :
+bw = bw' ;
+
 % may want subsample step ?
 % here's the subsampling you guys do:
 tic
