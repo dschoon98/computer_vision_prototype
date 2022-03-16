@@ -1,24 +1,38 @@
+
 addpath .
 
-tic
-I = imread('/home/morgoth/computer_vision_prototype/images/flag_and_multi_color.jpeg'); % i dont understand paths
-bw = rgb2gray(I);
-% may want subsample step ?
-% here's the subsampling you guys do:
-tic
-Im_smol = imresize(bw, 0.1)
 
-figure
-imshow(bw)
 
-%method #1 : Gaussian filter
 
-G_Im10 = imgaussfilt(bw, 2);
-Gauss_diff = bw - G_Im10;
-idx = find(Gauss_diff > 10);
-Gauss_diff(idx) = 255 ;
-[Gauss_lines_min, Gauss_lines_max ] = grab_lines_2(Gauss_diff , 15 );
-toc
 
+
+myFolder = '/home/morgoth/computer_vision_prototype/bebop_images/cyberzoo_poles_panels/' %20190121-140205
+writeFolder = '/home/morgoth/computer_vision_prototype/CV_output/abinas_cv_output_cyberzoo_poles_panels'
+I = imread('/home/morgoth/computer_vision_prototype/bebop_images/cyberzoo_poles/20190121-135009/85878042.jpg'); % i dont understand paths
+
+k = 60482805
+for k = 60482805:1:113449057
+
+jpgFileName = strcat(myFolder, num2str(k), '.jpg');
+
+    try
+	    imageData = imread(jpgFileName)
+    
+        bw = rgb2gray(I);
+        bw = bw' ;
+        Im_smol = imresize(bw, 0.1) ; % check if resizing is bad
+        G_Im10 = imgaussfilt(Im_smol, 2);
+        Gauss_diff = Im_smol - G_Im10;
+        idx = find(Gauss_diff > 10);
+        Gauss_diff(idx) = 255 ;
+        [Gauss_lines_min, Gauss_lines_max ] = grab_lines_2(Gauss_diff , 15 );
+        new_name = strcat(writeFolder , num2str(k) , '.jpg');
+        imwrite(Gauss_lines_min, new_name);
+    catch \
+
+    end
+end
+
+ 
 % the best ones here are Gauss_lines_min or Gauss_lines_max. We should pick
 % one.
