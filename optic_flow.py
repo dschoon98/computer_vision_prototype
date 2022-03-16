@@ -24,7 +24,7 @@ def read_image_folder(image_dir_name,image_type):
         if file.endswith(image_type):
             image_names.append(image_dir_name + file);
         image_names.sort(key=get_number_file_name)
-    return sorted(image_names)
+    return image_names
 
 
 def lukas_kanade(old_bgr,new_bgr,graphics):
@@ -71,65 +71,65 @@ def lukas_kanade(old_bgr,new_bgr,graphics):
 
 # Create a mask image for drawing purposes
 #mask = np.zeros_like(old_frame)
-def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_size):
-    
-    n_points = good_old.shape[0];
-     # This is a RANSAC method to better deal with outliers
-    # matrices and vectors for the big system:
-    A = np.concatenate((good_old, np.ones([good_old.shape[0], 1])), axis=1);
-    u_vector = flow_vectors[:,0];
-    v_vector = flow_vectors[:,1];
-    
-    # solve many small systems, calculating the errors:
-    errors = np.zeros([n_iterations, 2]);
-    pu = np.zeros([n_iterations, 3])
-    pv = np.zeros([n_iterations, 3])
-    for it in range(n_iterations):
-        inds = np.random.choice(range(n_points), size=sample_size, replace=False);
-        AA = np.concatenate((good_old[inds,:], np.ones([sample_size, 1])), axis=1);
-        x = good_old[inds,0].reshape([1,3])[0]
-        y = good_old[inds,1].reshape([1,3])[0]
-        
-        A_rot = 0.1 # rad/s or deg/s?
-        B_rot = 0.1
-        C_rot = 0.1
-        pseudo_inverse_AA = np.linalg.pinv(AA);
-        
-        # horizontal flow:
-        u_vector_small = flow_vectors[inds, 0];
-
-        # derotate horizontal flow
-        u_vector_small = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([1,x.shape[0]]) - C_rot*y
-        u_vector_small = u_vector_small[0]
-
-        #pu[it, :] = np.linalg.solve(AA, UU);
-        pu[it,:] = np.dot(pseudo_inverse_AA, u_vector_small);
-        errs = np.abs(np.dot(A, pu[it,:]) - u_vector);
-        errs[errs > error_threshold] = error_threshold;
-        errors[it, 0] = np.mean(errs);
-        
-        # vertical flow:
-        v_vector_small = flow_vectors[inds, 1];
-        # derotate vertical flow
-        v_vector_small = v_vector_small + C_rot*x - A_rot*np.ones([1,y.shape[0]]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
-        v_vector_small = v_vector_small[0]
-
-        
-        # pv[it, :] = np.linalg.solve(AA, VV);
-        pv[it, :] = np.dot(pseudo_inverse_AA, v_vector_small);
-        errs = np.abs(np.dot(A, pv[it,:]) - v_vector);
-        errs[errs > error_threshold] = error_threshold;
-
-        errors[it, 1] = np.mean(errs);
-    
-    # take the minimal error
-    errors = np.mean(errors, axis=1);
-    ind = np.argmin(errors);
-    err = errors[ind];
-    pu = pu[ind, :];
-    pv = pv[ind, :];
-
-    return pu, pv, err
+#def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_size):
+#    
+#    n_points = good_old.shape[0];
+#     # This is a RANSAC method to better deal with outliers
+#    # matrices and vectors for the big system:
+#    A = np.concatenate((good_old, np.ones([good_old.shape[0], 1])), axis=1);
+#    u_vector = flow_vectors[:,0];
+#    v_vector = flow_vectors[:,1];
+#    
+#    # solve many small systems, calculating the errors:
+#    errors = np.zeros([n_iterations, 2]);
+#    pu = np.zeros([n_iterations, 3])
+#    pv = np.zeros([n_iterations, 3])
+#    for it in range(n_iterations):
+#        inds = np.random.choice(range(n_points), size=sample_size, replace=False);
+#        AA = np.concatenate((good_old[inds,:], np.ones([sample_size, 1])), axis=1);
+#        x = good_old[inds,0].reshape([1,3])[0]
+#        y = good_old[inds,1].reshape([1,3])[0]
+#        
+#        A_rot = 0.1 # rad/s or deg/s?
+#        B_rot = 0.1
+#        C_rot = 0.1
+#        pseudo_inverse_AA = np.linalg.pinv(AA);
+#        
+#        # horizontal flow:
+#        u_vector_small = flow_vectors[inds, 0];
+#
+#        # derotate horizontal flow
+#        u_vector_small = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([1,x.shape[0]]) - C_rot*y
+#        u_vector_small = u_vector_small[0]
+#
+#        #pu[it, :] = np.linalg.solve(AA, UU);
+#        pu[it,:] = np.dot(pseudo_inverse_AA, u_vector_small);
+#        errs = np.abs(np.dot(A, pu[it,:]) - u_vector);
+#        errs[errs > error_threshold] = error_threshold;
+#        errors[it, 0] = np.mean(errs);
+#        
+#        # vertical flow:
+#        v_vector_small = flow_vectors[inds, 1];
+#        # derotate vertical flow0[;.]
+#        v_vector_small = v_vector_small + C_rot*x - A_rot*np.ones([1,y.shape[0]]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
+#        v_vector_small = v_vector_small[0]
+#
+#        
+#        # pv[it, :] = np.linalg.solve(AA, VV);
+#        pv[it, :] = np.dot(pseudo_inverse_AA, v_vector_small);
+#        errs = np.abs(np.dot(A, pv[it,:]) - v_vector);
+#        errs[errs > error_threshold] = error_threshold;
+#
+#        errors[it, 1] = np.mean(errs);
+#    
+#    # take the minimal error
+#    errors = np.mean(errors, axis=1);
+#    ind = np.argmin(errors);
+#    err = errors[ind];
+#    pu = pu[ind, :];
+#    pv = pv[ind, :];
+#
+#    return pu, pv, err
 
 def determine_optical_flow(image_names,graphics):
     resize_factor = 2
@@ -162,17 +162,18 @@ def determine_optical_flow(image_names,graphics):
             good_old -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
             good_new -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
             
-            # Ransac
-            pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
+#            # Ransac
+#            pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
 
             x = good_old[:,[0]]
             y = good_old[:,[1]]
             mat_mul = np.concatenate((x,y,np.ones([x.shape[0],1])),axis=1)
             
-            u = np.matmul(mat_mul,pu.reshape([3,1]))
-            v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
-#            u = flow_vectors[:,[0]]
-#            v = flow_vectors[:,[1]]
+#            u = np.matmul(mat_mul,pu.reshape([3,1]))
+#            v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
+            u = flow_vectors[:,[0]]
+            v = flow_vectors[:,[1]]
+            u = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([1,x.shape[0]]) - C_rot*y
             
             A_matrix = np.array([       [1,0,-x[0][0],0],
                                         [0,1,-y[0][0],0],
@@ -187,8 +188,10 @@ def determine_optical_flow(image_names,graphics):
             old_index += 1
             
             if graphics:
-
-    
+                # Move to old coordinate center again 
+                good_old += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
+                good_new += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
+            
                 ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
                 n_points = good_old.shape[0];
         
@@ -276,7 +279,7 @@ def determine_optical_flow(image_names,graphics):
     return flow_vectors, good_old, good_new, solution
 
 # Main script
-image_names = read_image_folder('images/opticflow/','jpeg')
+image_names = read_image_folder('bebop_images/cz_poles/cz','jpg')
 flow_vectors,good_old,good_new,solution = determine_optical_flow(image_names,graphics=True)
 
 
