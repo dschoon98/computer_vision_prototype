@@ -36,7 +36,7 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
     # params for ShiTomasi corner detection
-    feature_params = dict( maxCorners = 40,
+    feature_params = dict( maxCorners = 3,
                            qualityLevel = 0.1,
                            minDistance = 20,
                            blockSize = 20 )
@@ -173,23 +173,23 @@ def determine_optical_flow(image_names,graphics):
             mat_mul = np.concatenate((x,y,np.ones([x.shape[0],1])),axis=1)
             
 
-            u = np.matmul(mat_mul,pu.reshape([3,1]))
-            v = np.matmul(mat_mul,pv.reshape([3,1]))
-            print('pu =',pu)
+#            u = np.matmul(mat_mul,pu.reshape([3,1]))
+#            v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
+            u = flow_vectors[:,[0]]
+            v = flow_vectors[:,[1]]
+            print('u = ',u)
+            print('v = ',v)
             A_matrix = np.array([       [1,0,-x[0][0],0],
                                         [0,1,-y[0][0],0],
-                                        [1,0,-x[28][0],u[28][0]],
-                                        [0,1,-y[28][0],u[28][0]] ])
+                                        [1,0,-x[1][0],u[1][0]],
+                                        [0,1,-y[1][0],u[1][0]] ])
             b_vector = np.array([[u[0][0]],
                                  [v[0][0]],
                                  [0],
                                  [0]])
-            solution = np.linalg.solve(A_matrix,b_vector)      
+            solution = np.linalg.solve(A_matrix,b_vector)  # Ax = b with x = [U,V,W,Z_2]^T SEE NOTES
+            print('solution = ',solution)
         old_index += 1
-
-            # Solve Ax = b with A being the matrix with 6 equations u1 = ... ,  \n
-            # v1 = ..., (...), v3 = ... \
-            # b = zeros(6,1), I tried this 
             
             
             # extract the parameters of the flow field:
@@ -266,6 +266,6 @@ def determine_optical_flow(image_names,graphics):
 
 # Main script
 image_names = read_image_folder('images/opticflow/','jpeg')
-flow_vectors,good_old,good_new,solution = determine_optical_flow(image_names,graphics=False)
+flow_vectors,good_old,good_new,solution = determine_optical_flow(image_names,graphics=True)
 
 
