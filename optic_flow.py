@@ -27,19 +27,14 @@ def read_image_folder(image_dir_name,image_type):
     return sorted(image_names)
 
 
-def lukas_kanade(old_index,new_index,image_names,graphics):
-    resize_factor = 2
+def lukas_kanade(old_bgr,new_bgr,graphics):
     ## parameters - keep them like this:
-    old_bgr = cv.imread(image_names[old_index])
-    new_bgr = cv.imread(image_names[new_index])
-    old_bgr = cv.resize(old_bgr, (int(old_bgr.shape[1]/resize_factor), int(old_bgr.shape[0]/resize_factor)));
-    new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
     # params for ShiTomasi corner detection
     feature_params = dict( maxCorners = 100,
-                           qualityLevel = 0.1,
-                           minDistance = 20,
-                           blockSize = 20 )
+                           qualityLevel = 0.3,
+                           minDistance = 7,
+                           blockSize = 7 )
     
     # Parameters for lucas kanade optical flow
     lk_params = dict( winSize  = (15, 15),
@@ -65,22 +60,7 @@ def lukas_kanade(old_index,new_index,image_names,graphics):
     
     flow_vectors = good_new - good_old
     
-    if graphics:
 
-    
-        ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
-        n_points = good_old.shape[0];
-
-        color = (0,255,0);
-        for p in range(n_points):
-            tup_old = tuple(map(int,tuple(good_old[p,:])))
-            tup_new = tuple(map(int,tuple(good_new[p,:])))
-
-            cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.5);
-        
-        cv.imshow('image',ima)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
 
     return good_old, good_new, flow_vectors
     
@@ -110,33 +90,29 @@ def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_si
         x = good_old[inds,0].reshape([1,3])[0]
         y = good_old[inds,1].reshape([1,3])[0]
         
-        print(good_old)
-        print('x =',x)
-        print('y =',y)
-        A_rot = 1 # rad/s or deg/s?
-        B_rot = 1
-        C_rot = 1
+        A_rot = 0.1 # rad/s or deg/s?
+        B_rot = 0.1
+        C_rot = 0.1
         pseudo_inverse_AA = np.linalg.pinv(AA);
         
         # horizontal flow:
         u_vector_small = flow_vectors[inds, 0];
-        print(u_vector_small,A_rot*np.multiply(x,y),B_rot*np.multiply(x,x))
-        
+
         # derotate horizontal flow
-        u_vector_small = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x)# + B_rot*np.ones([x.shape[0],x.shape[1]]) - C_rot*y
-        print('u = ',u_vector_small)
+        u_vector_small = u_vector_small - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([1,x.shape[0]]) - C_rot*y
+        u_vector_small = u_vector_small[0]
 
         #pu[it, :] = np.linalg.solve(AA, UU);
         pu[it,:] = np.dot(pseudo_inverse_AA, u_vector_small);
         errs = np.abs(np.dot(A, pu[it,:]) - u_vector);
         errs[errs > error_threshold] = error_threshold;
         errors[it, 0] = np.mean(errs);
+        
         # vertical flow:
         v_vector_small = flow_vectors[inds, 1];
-        print('v = ',v_vector_small)
         # derotate vertical flow
-        v_vector_small = v_vector_small + C_rot*x - A_rot*np.ones([y.shape[0],y.shape[1]]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
-        print('v = ',v_vector_small)
+        v_vector_small = v_vector_small + C_rot*x - A_rot*np.ones([1,y.shape[0]]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
+        v_vector_small = v_vector_small[0]
 
         
         # pv[it, :] = np.linalg.solve(AA, VV);
@@ -156,6 +132,7 @@ def ransac(good_old,good_new,flow_vectors,n_iterations,error_threshold,sample_si
     return pu, pv, err
 
 def determine_optical_flow(image_names,graphics):
+    resize_factor = 2
 # iterate over the images:
     old_index = 0
     n_images = len(image_names);
@@ -168,50 +145,63 @@ def determine_optical_flow(image_names,graphics):
 #    ttc_over_time = np.zeros([n_images,1]);
 #    FoE = np.asarray([0.0]*2);
 #    time_to_contact = 0.0;
-    for im in range(2): #n_images
-        
+    for im in range(n_images): #n_images
+        new_index = old_index + 1
+
         if im>0:
-            
-    #       t_before = time.time()
+            old_bgr = cv.imread(image_names[old_index])
+            new_bgr = cv.imread(image_names[new_index])
+            old_bgr = cv.resize(old_bgr, (int(old_bgr.shape[1]/resize_factor), int(old_bgr.shape[0]/resize_factor)));
+            new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
+
+
             # determine optical flow:
-            good_old, good_new, flow_vectors = lukas_kanade(old_index-1,old_index,image_names,graphics) # Right now image indexes are simply 0,1, needs to loop over images depending on output of drone camera
-            
-    #            elapsed = time.time() - t_before;
-    #            if(verbose):
-    #                print('Elapsed time = {}'.format(elapsed));
-    #            elapsed_times[im] = elapsed;
-    #       
-            
+            good_old, good_new, flow_vectors = lukas_kanade(old_bgr,new_bgr,graphics) # Right now image indexes are simply 0,1, needs to loop over images depending on output of drone camera
+
             # convert the pixels to a frame where the coordinate in the center is (0,0)
-            good_old -= 128.0;
-            good_new -= 128.0;
-            pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
-#            print(pu.reshape([3,1]))
-#            print(np.array([[good_old[0][0],good_old[0][1],1]]))
+            good_old -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
+            good_new -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
             
+            # Ransac
+            pu, pv, err = ransac(good_old, good_new, flow_vectors,n_iterations=50, error_threshold=10, sample_size=3)
+
             x = good_old[:,[0]]
             y = good_old[:,[1]]
             mat_mul = np.concatenate((x,y,np.ones([x.shape[0],1])),axis=1)
             
-
             u = np.matmul(mat_mul,pu.reshape([3,1]))
             v = np.matmul(mat_mul,pv.reshape([3,1]))   # Q. Use ransac fit for determining u and v or just directly extract them from the flow_vectors (LK)?
 #            u = flow_vectors[:,[0]]
 #            v = flow_vectors[:,[1]]
             
-
             A_matrix = np.array([       [1,0,-x[0][0],0],
                                         [0,1,-y[0][0],0],
                                         [1,0,-x[1][0],u[1][0]],
                                         [0,1,-y[1][0],u[1][0]] ])
+            
             b_vector = np.array([[u[0][0]],
                                  [v[0][0]],
                                  [0],
                                  [0]])
             solution = np.linalg.solve(A_matrix,b_vector)  # Ax = b with x = [U,V,W,Z_2]^T SEE NOTES
-            print('solution = ',solution)
-        old_index += 1
+            old_index += 1
             
+            if graphics:
+
+    
+                ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
+                n_points = good_old.shape[0];
+        
+                color = (0,255,0);
+                for p in range(n_points):
+                    tup_old = tuple(map(int,tuple(good_old[p,:])))
+                    tup_new = tuple(map(int,tuple(good_new[p,:])))
+        
+                    cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.5);
+                
+                cv.imshow('image',ima)
+                cv.waitKey(0)
+                cv.destroyAllWindows()
             
             # extract the parameters of the flow field:
 
