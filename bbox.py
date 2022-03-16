@@ -31,19 +31,48 @@ start_time = time.time()
 #    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 #])
 
+
+Matrix_testje = np.matrix([
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+])
+
+
+
+
+
+
+
+
+
 ###################### 
 #Image processing
 
-resize_factor = 10
+resize_factor = 20
 image_name = 'images/image1.jpeg'
 im = cv2.imread(image_name);
+plt.figure()
+plt.imshow(im)
 im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
-im = cv2.GaussianBlur(im,(5,5),0)
+im = cv2.GaussianBlur(im,(3,3),0)
 im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
 plt.figure()
 plt.imshow(im_rgb)
 plt.title('Resized image with blur')
-
 
 
 bin_mat = edge.edge_finder(im)
@@ -51,7 +80,7 @@ bin_mat = edge.edge_finder(im)
 ####################
 
 
-object_amount =100
+object_amount = 100
 
 object_matrix = np.zeros([object_amount, 8])
 switch_var = 1
@@ -59,18 +88,16 @@ rows = bin_mat.shape[0]
 cols = bin_mat.shape[1]
 
 k=0
-going_left=1
-hit=0
-        
+
 def x_ray(bin_mat):
     global object_matrix
     global hit
     global object_amount
+    global k
     i_start=0
     i_end=rows
     j_start=0
     j_end=cols
-    global k
     stopvar=0
     running=1
     
@@ -79,19 +106,20 @@ def x_ray(bin_mat):
         for i in range(int(i_start), int(i_end)):
             xr=iter(range(int(j_start), int(j_end)))
             for j in xr:
-                for K in range(k):
-                    if i>=object_matrix[K,0]-1 and i<=object_matrix[K,6]+1 and j>=object_matrix[K,5]-1 and j<=object_matrix[K,3]+1:
-                        for z in range(int((object_matrix[K,3]-object_matrix[K,5])+3)):
-                            next(xr)
-
-                            # StopIteration happens sometimes. To solve: Add extra stopping condition
-                            
-                            # Once it finds object, break out of K loop
                 if bin_mat[int(i),int(j)]==1:
-                    object_matrix[k,0]=i
-                    object_matrix[k,1]=j
-                    stopvar=1
-                    break
+                    inside_object=0
+                    for K in range(k):
+                        if i>=object_matrix[K,0] and i<=object_matrix[K,6] and j>=object_matrix[K,5] and j<=object_matrix[K,3]:
+                            inside_object=1
+                            for z in range(int(object_matrix[K, 3]-j)):
+                                next(xr)
+                        if inside_object:
+                            break
+                    if not inside_object:
+                        object_matrix[k,0]=i
+                        object_matrix[k,1]=j
+                        stopvar=1
+                        break
             if stopvar:
                 right_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
                 left_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
@@ -138,11 +166,11 @@ def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
             break
         if Matrix_edges[int(i), int(j-1)] == 1:
             j-=1
-        elif Matrix_edges[int(i-1), int(j-1)] == 1:
-            i-=1
+        elif Matrix_edges[int(i+1), int(j-1)] == 1:
+            i+=1
             j-=1
-        elif Matrix_edges[int(i-1), int(j)] == 1:
-            i-=1
+        elif Matrix_edges[int(i+1), int(j)] == 1:
+            i+=1
         else:
             break
     object_matrix[k,4]=i
@@ -175,6 +203,8 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right):
 
 
 x_ray(bin_mat)
+
+print(object_matrix)
 
 end_time = time.time()
 print(end_time-start_time)
