@@ -175,13 +175,16 @@ def determine_optical_flow(image_names,graphics):
 
             u = np.matmul(mat_mul,pu.reshape([3,1]))
             v = np.matmul(mat_mul,pv.reshape([3,1]))
-            A_matrix = np.array([      [u[0][0],0,0,1,0,-x[0][0]],
-                                        [v[0][0],0,0,0,1,-y[0][0]],
-                                        [0,u[1][0],0,1,0,-x[1][0]],
-                                        [0,v[1][0],0,0,1,-y[1][0]],
-                                        [0,0,u[2][0],1,0,-x[2][0]],
-                                        [0,0,v[2][0],0,1,-y[2][0]]      ])
-            solution = np.linalg.solve(A_matrix,np.array([[1]]))      
+            print('pu =',pu)
+            A_matrix = np.array([       [1,0,-x[0][0],0],
+                                        [0,1,-y[0][0],0],
+                                        [1,0,-x[28][0],u[28][0]],
+                                        [0,1,-y[28][0],u[28][0]] ])
+            b_vector = np.array([[u[0][0]],
+                                 [v[0][0]],
+                                 [0],
+                                 [0]])
+            solution = np.linalg.solve(A_matrix,b_vector)      
         old_index += 1
 
             # Solve Ax = b with A being the matrix with 6 equations u1 = ... ,  \n
