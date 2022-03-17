@@ -32,7 +32,7 @@ def lukas_kanade(old_bgr,new_bgr,graphics):
     # Take first frame and find corners in it
     old_gray = cv.cvtColor(old_bgr, cv.COLOR_BGR2GRAY)
     p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
-
+    
     new_gray = cv.cvtColor(new_bgr, cv.COLOR_BGR2GRAY)
     
     # calculate optical flow
@@ -61,6 +61,8 @@ def determine_optical_flow(images,graphics):
         new_index = old_index + 1
 
         if im>0:
+            
+            #index right figures and resize them
             old_bgr = images[old_index]
             new_bgr = images[new_index]
             old_bgr = cv.resize(old_bgr, (int(old_bgr.shape[1]/resize_factor), int(old_bgr.shape[0]/resize_factor)));
@@ -76,7 +78,7 @@ def determine_optical_flow(images,graphics):
             x = good_old[:,[0]]
             y = good_old[:,[1]]
             
-            # Rotational and Translational rates
+            # rotational and translational rates
             A_rot = 0.1  # Unit?
             B_rot = 0.1
             C_rot = 0.1
@@ -86,11 +88,13 @@ def determine_optical_flow(images,graphics):
             
             u = flow_vectors[:,[0]]
             v = flow_vectors[:,[1]]
+            
+            # derotate the optical flow vectors 
             u = u - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([x.shape[0],1]) - C_rot*y
             v = v + C_rot*x - A_rot*np.ones([y.shape[0],1]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
             
             Z_horizontal = np.divide(x*W,u) - np.divide(U*np.ones([x.shape[0],1]),u)  # Z = (x*W-U)/u 
-            Z_vertical = np.divide(y*W,v) - np.divide(V*np.ones([x.shape[0],1]),v)  # Z = (y*W-V)/v 
+            Z_vertical = np.divide(y*W,v) - np.divide(V*np.ones([y.shape[0],1]),v)  # Z = (y*W-V)/v 
             Z = np.abs(np.divide(Z_horizontal + Z_vertical,2*np.ones([x.shape[0],1])))  # Z = (Z_hor + Z_vert)/2
             
             old_index += 1

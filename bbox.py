@@ -62,20 +62,20 @@ Matrix_testje = np.matrix([
 ###################### 
 #Image processing
 
-resize_factor = 20
+resize_factor = 10
 image_name = 'images/image1.jpeg'
 im = cv2.imread(image_name);
 plt.figure()
 plt.imshow(im)
-im = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
-im = cv2.GaussianBlur(im,(3,3),0)
-im_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB);
+im_resized = cv2.resize(im, (int(im.shape[1]/resize_factor), int(im.shape[0]/resize_factor)));
+im_blurred = cv2.GaussianBlur(im_resized,(3,3),0)
+im_rgb = cv2.cvtColor(im_blurred, cv2.COLOR_BGR2RGB);
 plt.figure()
 plt.imshow(im_rgb)
 plt.title('Resized image with blur')
 
 
-bin_mat = edge.edge_finder(im)
+bin_mat = edge.edge_finder(im_blurred)
 
 ####################
 
@@ -136,7 +136,6 @@ def x_ray(bin_mat):
 def right_maxima_finder(bin_mat, i, j):
     global k
     global object_matrix;
-    
     while True:
         if j==cols-1:
             break
@@ -181,7 +180,6 @@ def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
 def lower_maxima_finder(Matrix_edges, i_right, j_right):
     global k
     global object_matrix;
-
     while True:
         if i_right==rows-1:
             break
@@ -198,13 +196,24 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right):
     object_matrix[k, 7]=j_right
     
     
-    
+
 #----Testing------
 
 
 x_ray(bin_mat)
 
-print(object_matrix)
+im = im_blurred
+radius = 3
+color = (0,0,255)
+thickness = -1
 
-end_time = time.time()
-print(end_time-start_time)
+coordinates_left = (56,37)
+
+coordinates_right = (78,40)
+mask1 = cv2.circle(im, coordinates_left, radius, color, thickness)
+mask2 = cv2.circle(im, coordinates_right, radius, color, thickness)
+
+
+cv2.imshow('image_pole',im)
+cv2.waitKey(0)
+cv2.destroyAllWindows

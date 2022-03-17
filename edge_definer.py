@@ -4,7 +4,7 @@ import cv2
 resize_factor = 10
 
 
-def filter_color(im, y_low, y_high, u_low, u_high, v_low, v_high, resize_factor):
+def filter_color(im, y_low, y_high, u_low, u_high, v_low, v_high):
     YUV = cv2.cvtColor(im, cv2.COLOR_BGR2YUV);
     Filtered = np.zeros([YUV.shape[0], YUV.shape[1]]);
     for y in range(YUV.shape[0]):
@@ -40,9 +40,9 @@ def edge_definer(bin_mat):
                     temp_val = 0
     return matrix_edge
 def edge_finder(im):
-    bin_mat1 = filter_color(im,180,253,100,150,130,140,resize_factor)  #orange pole and chairs
-    bin_mat2 = filter_color(im,70,120,150,160,100,120,resize_factor)   #Blue chair
-    bin_mat3 = filter_color(im,100,200,90,130,160,240,resize_factor) #Orange 
+    bin_mat1 = filter_color(im,180,253,100,150,130,140)  #orange pole and chairs
+    bin_mat2 = filter_color(im,70,120,150,160,100,120)   #Blue chair
+    bin_mat3 = filter_color(im,100,200,90,130,160,240) #Orange 
     
     bin_mat_tot = bin_mat1+bin_mat2+bin_mat3   
     matrix_edge = edge_definer(bin_mat_tot)
