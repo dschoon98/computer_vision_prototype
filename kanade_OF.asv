@@ -1,0 +1,28 @@
+
+
+
+
+
+vidReader = VideoReader('/home/morgoth/computer_vision_prototype/CV_output/cv_output_cyberzoo_fancy/fancy_gauss.mp4');
+%save_path = 
+
+h = figure;
+movegui(h);
+hViewPanel = uipanel(h,'Position',[0 0 1 1],'Title','Plot of Optical Flow Vectors');
+hPlot = axes(hViewPanel);
+opticFlow = opticalFlowLK ;
+i = 1 
+
+while hasFrame(vidReader)
+    i = i + 1
+    frame = readFrame(vidReader);
+    frame = im2gray(frame) ;
+    imshow(frame)
+
+    flow = estimateFlow(opticFlow, frame);
+
+    hold on
+    plot(flow,'DecimationFactor',[5 5],'ScaleFactor',30,'Parent',hPlot);
+    hold off 
+    pause
+end
