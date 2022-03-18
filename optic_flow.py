@@ -3,13 +3,14 @@ import cv2 as cv
 import bbox
 import matplotlib.pyplot as plt
 
-
 object_amount= 80
+
 # Main script
 images_bgr = bbox.load_images_from_folder('CV_output/20_images',binary=False)
 images_bin = bbox.load_images_from_folder('CV_output/20_images',binary=True)
 plt.figure()
 plt.imshow(images_bin[0])
+
 def lukas_kanade(old_bgr,new_bgr,graphics,object_matrix):
     ## parameters - keep them like this:
 #     params for ShiTomasi corner detection
@@ -47,29 +48,25 @@ def lukas_kanade(old_bgr,new_bgr,graphics,object_matrix):
     
     # calculate optical flow
     p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, new_gray, p0, None, **lk_params)
- 
-    
-#    # Select good points
+     
+# Select good points
     good_new = p1[st==1]
     good_old = p0[st==1]
 
     flow_vectors = good_new - good_old
     
-
-
     return good_old, good_new, flow_vectors,p0
 
 def determine_optical_flow(images_bin,images_bgr,graphics):
     old_index = 0
     n_images = len(images_bin);
 
-    for im in range(n_images): #n_images
+    for im in range(3): #n_images
         new_index = old_index + 1
         
-
         if im>0:
 
-            object_matrix = bbox.x_ray(images_bin[old_index])
+            object_matrix,bin_mat = bbox.x_ray(images_bin[old_index])
             #index right figures and resize them
             old_bgr = images_bgr[old_index]
             new_bgr = images_bgr[new_index]
@@ -105,7 +102,6 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
             Z_vertical = np.divide(y*W,v) - np.divide(V*np.ones([y.shape[0],1]),v)  # Z = (y*W-V)/v 
             Z = np.abs(np.divide(Z_horizontal + Z_vertical,2*np.ones([x.shape[0],1])))  # Z = (Z_hor + Z_vert)/2
             
-            
             old_index += 1
             
             if graphics:
@@ -128,11 +124,10 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                     #cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
                 cv.imshow('image',ima)
                 cv.waitKey(0)    # Value = How many ms each frame stays open
-            object_matrix = np.zeros([object_amount,8])
             
-    return flow_vectors, good_old, good_new,p0
+    return flow_vectors, good_old, good_new,p0,object_matrix,bin_mat
 
-flow_vectors,good_old,good_new,p0 = determine_optical_flow(images_bin,images_bgr,graphics=True)
+flow_vectors,good_old,good_new,p0,object_matrix,bin_mat = determine_optical_flow(images_bin,images_bgr,graphics=False)
 
 cv.destroyAllWindows()
 

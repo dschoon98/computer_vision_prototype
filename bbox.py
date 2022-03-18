@@ -25,9 +25,6 @@ def load_images_from_folder(folder,binary):
 
 switch_var = 1
 
-# k = 0
-
-
 def x_ray(bin_mat):
     global hit
     global object_amount
@@ -75,7 +72,7 @@ def x_ray(bin_mat):
             if j==cols-1 and i==rows-1:
                 running=0
     object_matrix= np.delete(object_matrix,np.where(~object_matrix.any(axis=1))[0], axis=0)
-    return object_matrix
+    return object_matrix,bin_mat
  
 #This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
 def right_maxima_finder(bin_mat, i, j,object_matrix):
@@ -96,10 +93,6 @@ def right_maxima_finder(bin_mat, i, j,object_matrix):
     object_matrix[k,2]=i
     object_matrix[k,3]=j
 
-
-
-    
-
 #This function finds the left most edge of the object from the most upper coordinate of the object edge.
 def left_maxima_finder(Matrix_edges, i, j, object_matrix):
     global k
@@ -119,8 +112,6 @@ def left_maxima_finder(Matrix_edges, i, j, object_matrix):
     object_matrix[k,4]=i
     object_matrix[k,5]=j
 
-    return j
-
 def lower_maxima_finder(Matrix_edges, i_right, j_right,object_matrix):
     global k
     rows = Matrix_edges.shape[0]
@@ -138,11 +129,3 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right,object_matrix):
             break
     object_matrix[k, 6]=i_right
     object_matrix[k, 7]=j_right
-    
-    
-
-#----Testing------
-
-
-
-
