@@ -125,9 +125,9 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                     FontScale=0.6
                     thickness = 1
                     cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.1);  #Put flow vectors in image
-                    cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
+                    #cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
                 cv.imshow('image',ima)
-                cv.waitKey(16)    # Value = How many ms each frame stays open
+                cv.waitKey(0)    # Value = How many ms each frame stays open
             object_matrix = np.zeros([object_amount,8])
             
     return flow_vectors, good_old, good_new,p0
