@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 import time 
 import os
-start_time = time.time()
 
 
 def load_images_from_folder(folder,binary):
@@ -10,41 +9,33 @@ def load_images_from_folder(folder,binary):
     for filename in sorted(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder,filename))
         if img is not None:
-            if binary:
-                
-                im_mat = img[:,:,0]
-                
+            if binary:            
+                im_mat = img[:,:,0]            
                 # Should be deleted later on, just for testting. In Matlab code, it should be already made binary
                 bin_mat = np.divide(im_mat,255*np.ones([im_mat.shape[0],im_mat.shape[1]]))
                 bin_mat = bin_mat.astype(int)
-                
-    
     #            img = cv2.rotate(img,cv2.ROTATE_90_COUNTERCLOCKWISE)
     
                 image_sequence.append(bin_mat)
             else:
                 image_sequence.append(img)
-                
-
     return image_sequence
-
-
 
 ####################
 
-
-
-
-
 switch_var = 1
 
-k=0
+# k = 0
+
 
 def x_ray(bin_mat):
-    global object_matrix
     global hit
     global object_amount
     global k
+    k=0
+    object_amount = 200
+    object_matrix = np.zeros([object_amount,8])
+
     rows = bin_mat.shape[0]
     cols = bin_mat.shape[1]
 
@@ -75,20 +66,20 @@ def x_ray(bin_mat):
                         stopvar=1
                         break
             if stopvar:
-                right_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
-                left_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1])
-                lower_maxima_finder(bin_mat, object_matrix[k,2], object_matrix[k,3])
+                right_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1],object_matrix)
+                left_maxima_finder(bin_mat, object_matrix[k,0], object_matrix[k,1],object_matrix)
+                lower_maxima_finder(bin_mat, object_matrix[k,2], object_matrix[k,3],object_matrix)
                 i_start=object_matrix[k,0]
                 k+=1
                 break
             if j==cols-1 and i==rows-1:
                 running=0
-    object_matrix[~np.all(object_matrix == 0, axis=1)]
+    object_matrix= np.delete(object_matrix,np.where(~object_matrix.any(axis=1))[0], axis=0)
+    return object_matrix
  
 #This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
-def right_maxima_finder(bin_mat, i, j):
+def right_maxima_finder(bin_mat, i, j,object_matrix):
     global k
-    global object_matrix;
     cols = bin_mat.shape[1]
     while True:
         if j==cols-1:
@@ -110,9 +101,8 @@ def right_maxima_finder(bin_mat, i, j):
     
 
 #This function finds the left most edge of the object from the most upper coordinate of the object edge.
-def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
+def left_maxima_finder(Matrix_edges, i, j, object_matrix):
     global k
-    global object_matrix;
 
     while True:
         if j==0:
@@ -131,9 +121,8 @@ def left_maxima_finder(Matrix_edges, i, j, edge_gap = 0):
 
     return j
 
-def lower_maxima_finder(Matrix_edges, i_right, j_right):
+def lower_maxima_finder(Matrix_edges, i_right, j_right,object_matrix):
     global k
-    global object_matrix;
     rows = Matrix_edges.shape[0]
     while True:
         if i_right==rows-1:

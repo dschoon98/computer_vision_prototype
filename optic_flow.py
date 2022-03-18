@@ -1,19 +1,16 @@
 import numpy as np
 import cv2 as cv
 import bbox
+import matplotlib.pyplot as plt
 
-object_amount = 100
-object_matrix = np.zeros([object_amount, 8])
 
+object_amount= 80
 # Main script
 images_bgr = bbox.load_images_from_folder('CV_output/20_images',binary=False)
 images_bin = bbox.load_images_from_folder('CV_output/20_images',binary=True)
-
-
-flow_vectors,good_old,good_new,p0 = determine_optical_flow(images_bin,images_bgr,graphics=False)
-
-def lukas_kanade(old_bgr,new_bgr,graphics):
-    global object_matrix
+plt.figure()
+plt.imshow(images_bin[0])
+def lukas_kanade(old_bgr,new_bgr,graphics,object_matrix):
     ## parameters - keep them like this:
 #     params for ShiTomasi corner detection
 #    feature_params = dict( maxCorners = 100,
@@ -30,7 +27,6 @@ def lukas_kanade(old_bgr,new_bgr,graphics):
     old_gray = cv.cvtColor(old_bgr, cv.COLOR_BGR2GRAY)
   
 #    p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
-    
     p0 = np.array([  [object_matrix[0,1],object_matrix[0,0]], 
                      [object_matrix[0,3],object_matrix[0,2]], 
                      [object_matrix[0,5],object_matrix[0,4]], 
@@ -64,7 +60,6 @@ def lukas_kanade(old_bgr,new_bgr,graphics):
     return good_old, good_new, flow_vectors,p0
 
 def determine_optical_flow(images_bin,images_bgr,graphics):
-    global object_matrix
     old_index = 0
     n_images = len(images_bin);
 
@@ -74,7 +69,7 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
 
         if im>0:
 
-            bbox.x_ray(images_bin[old_index])
+            object_matrix = bbox.x_ray(images_bin[old_index])
             #index right figures and resize them
             old_bgr = images_bgr[old_index]
             new_bgr = images_bgr[new_index]
@@ -82,7 +77,7 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
 #            new_bgr = cv.resize(new_bgr, (int(new_bgr.shape[1]/resize_factor), int(new_bgr.shape[0]/resize_factor)));
 
             # determine optical flow:
-            good_old, good_new, flow_vectors,p0 = lukas_kanade(old_bgr,new_bgr,graphics) 
+            good_old, good_new, flow_vectors,p0 = lukas_kanade(old_bgr,new_bgr,graphics,object_matrix) 
 
             # convert the pixels to a frame where the coordinate in the center is (0,0)
             good_old -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
@@ -120,8 +115,7 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                 good_new += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
                 
                 # The image you see is the average of the previous and current image
-                ima = old_bgr
-
+                ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
                 n_points = good_old.shape[0];
                 color = (0,255,0);
                 for p in range(n_points):
@@ -131,12 +125,14 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                     FontScale=0.6
                     thickness = 1
                     cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.1);  #Put flow vectors in image
-#                    cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
+                    cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
                 cv.imshow('image',ima)
-                cv.waitKey(0)    # Value = How many ms each frame stays open
-
-
+                cv.waitKey(16)    # Value = How many ms each frame stays open
+            object_matrix = np.zeros([object_amount,8])
+            
     return flow_vectors, good_old, good_new,p0
+
+flow_vectors,good_old,good_new,p0 = determine_optical_flow(images_bin,images_bgr,graphics=True)
 
 cv.destroyAllWindows()
 
