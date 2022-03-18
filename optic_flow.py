@@ -2,14 +2,23 @@ import numpy as np
 import cv2 as cv
 import bbox
 import matplotlib.pyplot as plt
+import time
 
-object_amount= 80
+start_time = time.time()
+
+graphics = True
+
+images_bgr = bbox.load_images_from_folder('CV_output/abinas_cv_output_cyberzoo_poles_panels',binary=False)
+images_bin = bbox.load_images_from_folder('CV_output/abinas_cv_output_cyberzoo_poles_panels',binary=True)
+
+
+# resize image
 
 # Main script
-images_bgr = bbox.load_images_from_folder('CV_output/20_images',binary=False)
-images_bin = bbox.load_images_from_folder('CV_output/20_images',binary=True)
-plt.figure()
-plt.imshow(images_bin[0])
+if graphics:
+    plt.figure()
+    plt.imshow(images_bin[0])
+
 
 def lukas_kanade(old_bgr,new_bgr,graphics,object_matrix):
     ## parameters - keep them like this:
@@ -29,14 +38,14 @@ def lukas_kanade(old_bgr,new_bgr,graphics,object_matrix):
   
 #    p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
     p0 = np.array([  [object_matrix[0,1],object_matrix[0,0]], 
-                     [object_matrix[0,3],object_matrix[0,2]], 
-                     [object_matrix[0,5],object_matrix[0,4]], 
+                     [object_matrix[0,3],(object_matrix[0,0]-object_matrix[0,6])/2], 
+                     [object_matrix[0,5],(object_matrix[0,0]-object_matrix[0,6])/2], 
                      [object_matrix[0,7],object_matrix[0,6]]     ],np.float32)  # Adding j_right of an obstacle 
     for k in range(object_matrix.shape[0]):
         if k>0:
             added = np.array([ [object_matrix[k,1],object_matrix[k,0]], 
-                     [object_matrix[k,3],object_matrix[k,2]], 
-                     [object_matrix[k,5],object_matrix[k,4]],
+                     [object_matrix[k,3],(object_matrix[0,0]-object_matrix[0,6])/2], 
+                     [object_matrix[k,5],(object_matrix[0,0]-object_matrix[0,6])/2],
                      [object_matrix[k,7],object_matrix[k,6]]   ],np.float32)
             p0 = np.append(p0,added,axis=0)
         else:
@@ -61,7 +70,7 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
     old_index = 0
     n_images = len(images_bin);
 
-    for im in range(3): #n_images
+    for im in range(n_images): #n_images
         new_index = old_index + 1
         
         if im>0:
@@ -80,7 +89,9 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
             good_old -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
             good_new -= np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
 
-            x = good_old[:,[0]]
+
+            # x,y coordinates of the old points to track
+            x = good_old[:,[0]] 
             y = good_old[:,[1]]
             
             # rotational and translational rates
@@ -91,12 +102,23 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
             V = 1
             W = 1
             
+            # obtain the optic flow vectors
             u = flow_vectors[:,[0]]
             v = flow_vectors[:,[1]]
             
+# !!!!!!    # If we want to use for-loop instead of matrix multiplication/division, because C might be slower with the latter: 
+#            Z_horizontal = np.zeros([good_old.shape[0],good_old.shape[1]])
+#            Z_vertical = np.zeros([good_old.shape[0],good_old.shape[1]])
+#            for i in range(good_old.shape[0]):
+#                u[i] = u[i] - A_rot * x[i] * y[i] + B_rot * x[i]**2 + B_rot - C_rot * y[i]
+#                v[i] = v[i] + C_rot * x[i] - A_rot - A_rot * y[i]**2 + B_rot * x[i] * y[i]
+#                
+#                Z_horizontal[i] = (x[i] * W - U)/u[i]
+#                Z_vertical[i] = (y[i]*W - V)/v[i]
+                
             # derotate the optical flow vectors 
             u = u - A_rot*np.multiply(x,y) + B_rot*np.multiply(x,x) + B_rot*np.ones([x.shape[0],1]) - C_rot*y
-            v = v + C_rot*x - A_rot*np.ones([y.shape[0],1]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)
+            v = v + C_rot*x - A_rot*np.ones([y.shape[0],1]) - A_rot*np.multiply(y,y) + B_rot*np.multiply(x,y)  
             
             Z_horizontal = np.divide(x*W,u) - np.divide(U*np.ones([x.shape[0],1]),u)  # Z = (x*W-U)/u 
             Z_vertical = np.divide(y*W,v) - np.divide(V*np.ones([y.shape[0],1]),v)  # Z = (y*W-V)/v 
@@ -111,7 +133,8 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                 good_new += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
                 
                 # The image you see is the average of the previous and current image
-                ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
+#                ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
+                ima = old_bgr
                 n_points = good_old.shape[0];
                 color = (0,255,0);
                 for p in range(n_points):
@@ -123,11 +146,14 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                     cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.1);  #Put flow vectors in image
                     #cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
                 cv.imshow('image',ima)
-                cv.waitKey(0)    # Value = How many ms each frame stays open
+                cv.waitKey(16)    # Value = How many ms each frame stays open
+            print('# of objects found = ', object_matrix.shape[0])
             
-    return flow_vectors, good_old, good_new,p0,object_matrix,bin_mat
+    return flow_vectors, good_old, good_new,p0,Z_horizontal,Z_vertical
 
-flow_vectors,good_old,good_new,p0,object_matrix,bin_mat = determine_optical_flow(images_bin,images_bgr,graphics=False)
+flow_vectors,good_old,good_new,p0,Z_horizontal,Z_vertical = determine_optical_flow(images_bin,images_bgr,graphics)
 
 cv.destroyAllWindows()
+end_time = time.time()
+print('Computation time per image =', (end_time-start_time)/len(images_bin))
 
