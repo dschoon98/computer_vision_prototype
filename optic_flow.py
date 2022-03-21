@@ -1,24 +1,30 @@
 import numpy as np
 import cv2 as cv
 import bbox
+import edge_definer as edge
 import matplotlib.pyplot as plt
 import time
 
 start_time = time.time()
 
-graphics = True
+resize_factor = 10
+graphics = False
 
-images_bgr = bbox.load_images_from_folder('CV_output/abinas_cv_output_cyberzoo_poles_panels',binary=False)
-images_bin = bbox.load_images_from_folder('CV_output/abinas_cv_output_cyberzoo_poles_panels',binary=True)
+images_bgr = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels_mats/20190121-142935/',resize_factor,binary=False) # bebop_images/cyberzoo_poles_panels_mats/20190121-142935/
+#images_bin = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels_mats/20190121-142935/',resize_factor,binary=True)
 
-
+images_bin = []
+for i in range(len(images_bgr)):
+    images_bin.append(edge.edge_finder(images_bgr[i]))
+plt.figure()
+plt.imshow(images_bin[126])
 # resize image
 
 # Main script
-if graphics:
-    plt.figure()
-    plt.imshow(images_bin[0])
-
+#if graphics:
+#    plt.figure()
+#    plt.imshow(images_bin[0])
+#
 
 def lukas_kanade(old_bgr,new_bgr,graphics,object_matrix):
     ## parameters - keep them like this:
@@ -131,10 +137,14 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                 # Move to old coordinate center again, merely for drawing purposes
                 good_old += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)
                 good_new += np.concatenate((0.5*old_bgr.shape[1]*np.ones([good_old.shape[0],1]), 0.5*old_bgr.shape[0]*np.ones([good_old.shape[0],1])),axis=1)  # Assumed image size stays the same for each image
+                good_old = good_old * resize_factor
+                good_new = good_new*resize_factor
                 
+                ima = old_bgr
+                ima = cv.resize(ima, (int(ima.shape[1]/(1/resize_factor)), int(ima.shape[0]/(1/resize_factor)))) # TO STILL BE ADDED TO C 
+
                 # The image you see is the average of the previous and current image
 #                ima = (0.5 * old_bgr.copy().astype(float) + 0.5 * new_bgr.copy().astype(float)) / 255.0;
-                ima = old_bgr
                 n_points = good_old.shape[0];
                 color = (0,255,0);
                 for p in range(n_points):
@@ -146,8 +156,9 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
                     cv.arrowedLine(ima, tup_old, tup_new, color,thickness=1,tipLength=0.1);  #Put flow vectors in image
                     #cv.putText(ima,str(round(Z[p][0],2)),(int(good_old[p,0]),int(good_old[p,1])),font,FontScale,color,thickness)  # Put Z_values in image
                 cv.imshow('image',ima)
-                cv.waitKey(16)    # Value = How many ms each frame stays open
-            print('# of objects found = ', object_matrix.shape[0])
+                cv.waitKey(30)    # Value = How many ms each frame stays open
+#            print('# of objects found = ', object_matrix.shape[0])
+            print('image_number = ',im)
             
     return flow_vectors, good_old, good_new,p0,Z_horizontal,Z_vertical
 

@@ -47,9 +47,9 @@ def edge_finder(im):
     bin_mat_tot = bin_mat1+bin_mat2+bin_mat3   
     matrix_edge = edge_definer(bin_mat_tot)
     
-    plt.figure()
-    plt.imshow(matrix_edge)
-    plt.title('Edges only')     
+#    plt.figure()
+#    plt.imshow(matrix_edge)
+#    plt.title('Edges only')     
     return matrix_edge
 
 #image_name = 'images/image1.jpeg'

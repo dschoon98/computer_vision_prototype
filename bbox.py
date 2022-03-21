@@ -4,22 +4,24 @@ import time
 import os
 import matplotlib.pyplot as plt
 
-def load_images_from_folder(folder,binary,scale_percent = 60):
+def load_images_from_folder(folder,resize_factor,binary):  # ADD RESIZE FACTOR TO C
     image_sequence = []
-
     for filename in sorted(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder,filename))
+        img = cv2.rotate(img,cv2.ROTATE_90_COUNTERCLOCKWISE)
+        img = cv2.resize(img, (int(img.shape[1]/resize_factor), int(img.shape[0]/resize_factor))) # TO STILL BE ADDED TO C 
+
         if img is not None:
             if binary:            
                 im_mat = img[:,:,0]            
                 # Should be deleted later on, just for testting. In Matlab code, it should be already made binary
                 bin_mat = np.divide(im_mat,255*np.ones([im_mat.shape[0],im_mat.shape[1]]))
                 bin_mat = bin_mat.astype(int)
-    #            img = cv2.rotate(img,cv2.ROTATE_90_COUNTERCLOCKWISE)
     
                 image_sequence.append(bin_mat)
             else:
                 image_sequence.append(img)
+
     return image_sequence
 
 ####################
@@ -78,9 +80,15 @@ def x_ray(bin_mat):
 #This function finds the right most boundary of an object starting from the coordinates of the most upper point of the object
 def right_maxima_finder(bin_mat, i, j,object_matrix):
     global k
+    if i == 47:
+        plt.figure()
+        plt.imshow(bin_mat)
     cols = bin_mat.shape[1]
+    rows = bin_mat.shape[0]
     while True:
         if j==cols-1:
+            break
+        if i == rows-1:
             break
         if bin_mat[int(i), int(j+1)] == 1:
             j+=1
@@ -97,9 +105,11 @@ def right_maxima_finder(bin_mat, i, j,object_matrix):
 #This function finds the left most edge of the object from the most upper coordinate of the object edge.
 def left_maxima_finder(Matrix_edges, i, j, object_matrix):
     global k
-
+    rows = Matrix_edges.shape[0]
     while True:
         if j==0:
+            break
+        if i == rows-1:
             break
         if Matrix_edges[int(i), int(j-1)] == 1:
             j-=1
