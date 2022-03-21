@@ -112,7 +112,7 @@ def x_ray(bin_mat):
                         if i>=object_matrix[K,0] and i<=object_matrix[K,6] and j>=object_matrix[K,5] and j<=object_matrix[K,3]:
                             inside_object=1
                             for z in range(int(object_matrix[K, 3]-j)):
-                                next(xr)
+                                next(xr) 
                         if inside_object:
                             break
                     if not inside_object:
