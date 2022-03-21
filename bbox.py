@@ -2,10 +2,11 @@ import numpy as np
 import cv2
 import time 
 import os
+import matplotlib.pyplot as plt
 
-
-def load_images_from_folder(folder,binary):
+def load_images_from_folder(folder,binary,scale_percent = 60):
     image_sequence = []
+
     for filename in sorted(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder,filename))
         if img is not None:
@@ -30,7 +31,7 @@ def x_ray(bin_mat):
     global object_amount
     global k
     k=0
-    object_amount = 200
+    object_amount = 400
     object_matrix = np.zeros([object_amount,8])
 
     rows = bin_mat.shape[0]
