@@ -10,7 +10,7 @@ start_time = time.time()
 resize_factor = 10
 graphics = False
 
-images_bgr = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels_mats/20190121-142935/',resize_factor,binary=False) # bebop_images/cyberzoo_poles_panels_mats/20190121-142935/
+images_bgr = bbox.load_images_from_folder('images/',resize_factor,binary=False) # bebop_images/cyberzoo_poles_panels_mats/20190121-142935/
 #images_bin = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels_mats/20190121-142935/',resize_factor,binary=True)
 
 images_bin = []
@@ -80,7 +80,8 @@ def determine_optical_flow(images_bin,images_bgr,graphics):
         new_index = old_index + 1
         
         if im>0:
-
+            
+            
             object_matrix,bin_mat = bbox.x_ray(images_bin[old_index])
             #index right figures and resize them
             old_bgr = images_bgr[old_index]

@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-resize_factor = 10
 
+resize_factor = 10
 
 def filter_color(im, y_low, y_high, u_low, u_high, v_low, v_high):
     YUV = cv2.cvtColor(im, cv2.COLOR_BGR2YUV);
@@ -39,17 +39,19 @@ def edge_definer(bin_mat):
                 else:
                     temp_val = 0
     return matrix_edge
-def edge_finder(im):
-    bin_mat1 = filter_color(im,180,253,100,150,130,140)  #orange pole and chairs
-    bin_mat2 = filter_color(im,70,120,150,160,100,120)   #Blue chair
-    bin_mat3 = filter_color(im,100,200,90,130,160,240) #Orange 
+def edge_finder(im,orange,blue,white):
+    omega = np.random.uniform(0,1)
+    print('omega = ',omega)
+    if omega <= orange:
+        bin_mat = filter_color(im,50,170,90,130,160,240) # Orange poles, tested on bebop images
+    if omega > orange and omega<= orange + blue:
+        bin_mat = filter_color(im,70,120,150,160,100,120)   #Blue chair
+    if omega > orange + blue and omega <= orange + blue + white:
+        bin_mat = filter_color(im,180,253,100,150,130,160)  #White Flags, rails, qr code whites, parts of multicolor 
+#    if omega > orange + blue + white and omega 
     
-    bin_mat_tot = bin_mat1+bin_mat2+bin_mat3   
-    matrix_edge = edge_definer(bin_mat_tot)
-    
-#    plt.figure()
-#    plt.imshow(matrix_edge)
-#    plt.title('Edges only')     
+    matrix_edge = edge_definer(bin_mat)
+      
     return matrix_edge
 
 #image_name = 'images/image1.jpeg'
