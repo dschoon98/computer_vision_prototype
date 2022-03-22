@@ -39,16 +39,20 @@ def edge_definer(bin_mat):
                 else:
                     temp_val = 0
     return matrix_edge
-def edge_finder(im,orange,blue,white):
+def edge_finder(im,orange,blue,white,green):
     omega = np.random.uniform(0,1)
     print('omega = ',omega)
+    # Orange poles   
     if omega <= orange:
         bin_mat = filter_color(im,50,170,90,130,160,240) # Orange poles, tested on bebop images
+    #Blue chair
     if omega > orange and omega<= orange + blue:
-        bin_mat = filter_color(im,70,120,150,160,100,120)   #Blue chair
+        bin_mat = filter_color(im,70,120,150,160,100,120)   
     if omega > orange + blue and omega <= orange + blue + white:
-        bin_mat = filter_color(im,180,253,100,150,130,160)  #White Flags, rails, qr code whites, parts of multicolor 
-#    if omega > orange + blue + white and omega 
+#        bin_mat = filter_color(im,180,253,100,150,130,160)  #White Flags NORMAL PIC, rails, qr code whites, parts of multicolor 
+        bin_mat = filter_color(im,80,253,130,180,130,180)   # White flag based on bebop images
+    if omega > orange + blue + white and omega <= orange + blue + white + green:
+        bin_mat = filter_color(im,80,180,50,100,100,150)  # Green plants
     
     matrix_edge = edge_definer(bin_mat)
       
