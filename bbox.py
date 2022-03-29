@@ -3,7 +3,7 @@ import cv2
 import time 
 import os
 import matplotlib.pyplot as plt
-
+import edge_definer as edge
 def load_images_from_folder(folder,resize_factor,binary):  # ADD RESIZE FACTOR TO C
     image_sequence = []
     for filename in sorted(os.listdir(folder)):
@@ -140,3 +140,14 @@ def lower_maxima_finder(Matrix_edges, i_right, j_right,object_matrix):
             break
     object_matrix[k, 6]=i_right
     object_matrix[k, 7]=j_right
+
+resize_factor = 1
+images_bgr = load_images_from_folder('images/',resize_factor,binary=False) # bebop_images/cyberzoo_poles_panels_mats/20190121-142935/
+#images_bin = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels_mats/20190121-142935/',resize_factor,binary=True)
+
+images_bin = []
+for i in range(len(images_bgr)):
+    images_bin.append(edge.edge_finder(images_bgr[i]))
+for i in range(10):
+    object_matrix,bin_mat = x_ray(images_bin[i])
+

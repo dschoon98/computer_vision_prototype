@@ -10,9 +10,10 @@ start_time = time.time()
 resize_factor = 10
 graphics = False
 
-images_bgr = bbox.load_images_from_folder('images/',resize_factor,binary=False) # bebop_images/cyberzoo_poles_panels_mats/20190121-142935/
+images_bgr = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels/20190121-140205',resize_factor,binary=False) # bebop_images/cyberzoo_poles_panels_mats/20190121-142935/
 #images_bin = bbox.load_images_from_folder('bebop_images/cyberzoo_poles_panels_mats/20190121-142935/',resize_factor,binary=True)
-
+plt.figure()
+plt.imshow(images_bgr)
 images_bin = []
 for i in range(len(images_bgr)):
     images_bin.append(edge.edge_finder(images_bgr[i]))

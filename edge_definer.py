@@ -47,7 +47,7 @@ def edge_finder(im,orange,blue,white,green):
         bin_mat = filter_color(im,50,170,90,130,160,240) # Orange poles, tested on bebop images
     #Blue chair
     if omega > orange and omega<= orange + blue:
-        bin_mat = filter_color(im,70,120,150,160,100,120)   
+        bin_mat = filter_color(im,70,120,150,160,100,120)
     if omega > orange + blue and omega <= orange + blue + white:
 #        bin_mat = filter_color(im,180,253,100,150,130,160)  #White Flags NORMAL PIC, rails, qr code whites, parts of multicolor 
         bin_mat = filter_color(im,80,253,130,180,130,180)   # White flag based on bebop images
