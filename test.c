@@ -53,7 +53,7 @@ void test_func(int test_array[rows][cols], int* k_object)
 int main()
 {
     
-
+	printf("Dit is een error\n");
 
     test_func(test_matrix, &k_object);
     test_func(test_matrix, &k_object);
