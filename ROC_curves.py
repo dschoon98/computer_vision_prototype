@@ -29,7 +29,7 @@ start_time = time.time()
 #    matrix_edges = edge.edge_finder(img,orange=0.6,blue=0.05,white=0.35)
 #    plt.figure()
 #    plt.imshow(matrix_edges)
-bin_mat = edge.filter_color(img,50,170,90,130,160,240)  
+bin_mat = edge.filter_color(img,80,120,0,180,0,150)  
 plt.figure()
 plt.imshow(bin_mat)
 end_time = time.time()
@@ -46,7 +46,7 @@ img_class = bin_mat_class.astype(np.uint8)
 RGB, Cl, x, y = ROC.get_images_and_grid(img,img_class)
 
 # Change ONLY the following line:
-Values = RGB[:,:,0];
+Values = RGB[:,:,1];
 
 # make it a flat list of values, in the right order:
 Values = Values.flatten();
